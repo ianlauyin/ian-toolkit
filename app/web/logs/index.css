@@ -148,10 +148,6 @@
       tr.info > [data-column="level"] {
         color: var(--accent);
       }
-
-      tr.debug > [data-column="level"] {
-        color: var(--muted);
-      }
     }
   }
 

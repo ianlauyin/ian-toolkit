@@ -19,6 +19,7 @@ Use this skill to get the log events of a project from the log server.
 - The `date` value is a date in HKT. If you do not give a date, the server uses the current day in HKT.
 - To get the events of an earlier day, give the date.
 - The response is `{"events": [...]}`. If the list is empty, the app has no events on that date.
+- The events are newest first. Each event has the fields `ts`, `id`, `action`, `latency_ms`, `level`, `error_message`, `context` and `extra`. `error_message` is a text or null. `context` and `extra` are objects, and each value in them is a text, a number or a boolean.
 - To select or change the events in the output, use `jq`.
 
 ## Errors

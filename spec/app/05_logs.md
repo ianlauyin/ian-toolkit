@@ -11,7 +11,9 @@
 - The page shows the events of the selected key and the selected app on the selected date. The newest event is first.
 - Each page has at most the number of events that the rows list gives. A date with no events shows "No log." and "Page 1 of 1 · 0 events".
 - The events are a table. Each event is one row.
-- Each field of an event owns a column. Each field of the `context` object also owns a column, named `context.<field>`. The `context` columns are after the other columns. The `info` field is one column, and it shows as JSON text. The `info` column is the last column. If the `context` of an event is not an object, a `context` column shows its text.
+- An event has the fields `ts`, `id`, `action`, `latency_ms`, `level`, `error_message`, `context` and `extra`. `context` and `extra` are objects. Each value in them is a text, a number or a boolean.
+- Each field of an event owns a column. Each field of the `context` object owns a column, named `context.<field>`. Each field of the `extra` object owns a column, named `extra.<field>`. The `context` columns are after the other columns. The `extra` columns are the last columns. An empty `context` or `extra` object has no column.
+- The `error_message` cell is empty when the value is null.
 - The columns are the fields of the events on the shown page, in the order that the page first sees them. A cell is empty when the event has no such field.
 - The page uses the full width of the browser window. It does not have the width limit of the other pages.
 - The `id` field has no column.
@@ -19,7 +21,7 @@
 - A cell that is too long for its column shows an ellipsis. The full text shows in a modal when the user clicks the cell. The user closes the modal with the Close button, with the Escape key, or with a click outside the modal.
 - A value that is an object or a list shows as JSON text. The table scrolls sideways when it is wider than the page.
 - The first cell of a row of level `warn` or `error` has a colored left border.
-- The `level` cell has a color: `error` is red and bold, `warn` is amber and bold, `info` is blue, `debug` is gray.
+- The `level` cell has a color: `error` is red and bold, `warn` is amber and bold, `info` is blue.
 - Previous is disabled on the first page. Next is disabled on the last page.
 - A change of the key tab, the app tab, or the date selects page 1.
 - A change of the key tab selects the first app of that key. It keeps the date, the filters, and the rows.
@@ -32,7 +34,7 @@
 
 - The first bar of the panel has a date input, a rows list, and a Refresh button. The rows list has 50, 100, 500, and 1000 rows. The default is 50. A change of the rows list selects page 1.
 - Refresh loads page 1 again with the same key, app, date, rows, and filters.
-- The second bar of the panel has a field input, a value input, and an Add filter button. The field list gives the column names of the events on the shown page. A column name is a path, such as `context.ip`. The user can type a longer path to filter on a value deeper inside a column, such as inside the `info` column.
+- The second bar of the panel has a field input, a value input, and an Add filter button. The field list gives the column names of the events on the shown page. A column name is a path, such as `context.ip` or `extra.count`. The user can type a longer path to filter on a value inside a text that holds JSON.
 - A filter is a field and a value. A field is a path of keys that are joined with dots, from the event to a value. A key can hold dots, so a path can match more than one key at each level. The path goes into objects at any depth. When a value on the path is a text that holds JSON, the path goes into that JSON. An event passes a filter when the text of the value at the path is equal to the filter value.
 - An event must pass all filters. The page shows each filter as a pill with a remove button. A new filter on a field replaces the old filter on that field.
 - A filter with no field or no value is not added.
@@ -45,4 +47,5 @@
 - `GET /logs-events` takes `server` (the key), `app`, `date` as `YYYY-MM-DD`, `page` from 1, the optional `page_size` (50, 100, 500, or 1000, default 50), and the optional `filters` as a JSON list of `{"field", "value"}`. The server applies the filters to the events of the date, then makes the pages. It returns `{"page": N, "page_size": S, "total": T, "events": [...]}`.
 - A key that is not in the file, an app that is not in the `apps` map of that key, a date that has a wrong format, a page that is not a number of 1 or more, a page size that is not in the list, or a `filters` value that is not correct returns 400.
 - The server reads the events of the selected key with the method of `skills/fetch-logs.md`. It uses the `api_key` of that key. The value is `env:NAME`. The server reads `NAME` from `.env`. It uses the limit 1000.
+- The log server gives the events newest first. The server keeps that order.
 - A failed read of `conf/log-server.json` or of the key returns 500. A failed request to the log server returns 500 with the reason. The reason does not contain the key.

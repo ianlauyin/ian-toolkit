@@ -7,13 +7,13 @@ fn events(count: usize) -> Vec<Value> {
 }
 
 #[test]
-fn page_of_gives_the_newest_events_first() {
+fn page_of_keeps_the_order_of_the_log_server() {
     let page = page_of(events(120), &[], 1, 50);
     assert_eq!((page.total, page.events.len()), (120, 50));
-    assert_eq!(page.events[0], json!({ "n": 119 }));
+    assert_eq!(page.events[0], json!({ "n": 0 }));
     let last = page_of(events(120), &[], 3, 50);
     assert_eq!(last.events.len(), 20);
-    assert_eq!(last.events[19], json!({ "n": 0 }));
+    assert_eq!(last.events[19], json!({ "n": 119 }));
     assert!(page_of(events(120), &[], 4, 50).events.is_empty());
 }
 
@@ -22,7 +22,7 @@ fn page_of_uses_the_page_size_and_the_filters() {
     assert_eq!(page_of(events(120), &[], 2, 100).events.len(), 20);
     let filters = [
         Filter {
-            field: "info.code".to_string(),
+            field: "extra.code".to_string(),
             value: "5".to_string(),
         },
         Filter {
@@ -31,23 +31,23 @@ fn page_of_uses_the_page_size_and_the_filters() {
         },
     ];
     let all = vec![
-        json!({ "level": "warn", "info": { "code": 5 } }),
-        json!({ "level": "info", "info": { "code": 5 } }),
-        json!({ "level": "warn", "info": { "code": 6 } }),
+        json!({ "level": "warn", "extra": { "code": 5 } }),
+        json!({ "level": "info", "extra": { "code": 5 } }),
+        json!({ "level": "warn", "extra": { "code": 6 } }),
         json!({ "level": "warn" }),
-        json!({ "level": "warn", "info": { "code": 5, "body.query.limit": "48" } }),
+        json!({ "level": "warn", "extra": { "code": 5, "body.query.limit": "48" } }),
     ];
     let page = page_of(all.clone(), &filters, 1, 50);
     assert_eq!((page.total, page.events.len()), (2, 2));
     let dotted = [Filter {
-        field: "info.body.query.limit".to_string(),
+        field: "extra.body.query.limit".to_string(),
         value: "48".to_string(),
     }];
     assert_eq!(page_of(all, &dotted, 1, 50).total, 1);
     let text = vec![
-        json!({ "info": "{\"code\":5}" }),
-        json!({ "info": "not json" }),
-        json!({ "info": { "code": null } }),
+        json!({ "extra": "{\"code\":5}" }),
+        json!({ "extra": "not json" }),
+        json!({ "extra": { "code": null } }),
     ];
     assert_eq!(page_of(text, &filters[..1], 1, 50).total, 1);
 }

@@ -26,33 +26,31 @@ function fakeApi() {
 }
 
 describe("logs", () => {
-  it("makes a column for each field and each context field, with info last", () => {
+  it("makes a column for each field, each context field and each extra field, with extra last", () => {
     const events = [
-      { ts: "t1", id: "i1", level: "info", context: { ip: "1.1.1.1" }, info: { "body.a": 1 } },
-      { ts: "t2", action: "API/GET:/x", context: { user_agent: "ua" }, info: { code: 5 } },
+      { ts: "t1", id: "i1", level: "info", error_message: null, context: { ip: "1.1.1.1" }, extra: { "body.a": 1 } },
+      { ts: "t2", id: "i2", level: "warn", error_message: "boom", context: { user_agent: "ua" }, extra: { code: 5, ok: false } },
     ];
-    const columns = logColumns(events);
-    assert.deepEqual(columns.map((c) => c.label), ["ts", "level", "action", "context.ip", "context.user_agent", "info"]);
-    assert.equal(cellText(events[0], columns[3]), "1.1.1.1");
-    assert.equal(cellText(events[0], columns[4]), "");
-    assert.equal(cellText(events[1], columns[4]), "ua");
-    assert.equal(cellText(events[1], columns[1]), "");
-    assert.equal(cellText({ ts: "2026-10-31T22:08:03.077818073+08:00" }, { key: "ts" }), "2026-10-31 22:08:03");
-    assert.equal(cellText(events[1], columns[5]), '{"code":5}');
-  });
-
-  it("shows plain context text and an empty cell for a null field", () => {
-    const events = [{ id: "i1", level: null, context: "plain" }];
     const columns = logColumns(events);
     assert.deepEqual(
       columns.map((c) => c.label),
-      ["level", "context"],
+      ["ts", "level", "error_message", "context.ip", "context.user_agent", "extra.body.a", "extra.code", "extra.ok"],
     );
-    assert.equal(cellText(events[0], columns[0]), "");
-    assert.equal(cellText(events[0], columns[1]), "plain");
+    assert.equal(cellText(events[0], columns[2]), "");
+    assert.equal(cellText(events[1], columns[2]), "boom");
+    assert.equal(cellText(events[0], columns[3]), "1.1.1.1");
+    assert.equal(cellText(events[0], columns[4]), "");
+    assert.equal(cellText(events[1], columns[4]), "ua");
+    assert.equal(cellText(events[0], columns[5]), "1");
+    assert.equal(cellText(events[1], columns[5]), "");
+    assert.equal(cellText(events[1], columns[7]), "false");
+    assert.equal(cellText({ ts: "2026-10-31T22:08:03.077818073+08:00" }, { key: "ts" }), "2026-10-31 22:08:03");
+  });
+
+  it("makes no sub column for an empty context or extra", () => {
     assert.deepEqual(
-      logColumns([{ level: "info", context: null }]).map((c) => c.label),
-      ["level"],
+      logColumns([{ ts: "t1", level: "info", context: {}, extra: {} }]).map((c) => c.label),
+      ["ts", "level"],
     );
   });
 

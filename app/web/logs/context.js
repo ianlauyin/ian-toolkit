@@ -12,24 +12,24 @@ export function pageCount(total, pageSize) {
 
 const isObject = (value) => typeof value === "object" && value !== null && !Array.isArray(value);
 
-// each field of an event owns a column, and each field of the context owns a column too
-// the context columns are after the other columns, and the info column is the last one
+// each field of an event owns a column, and each field of the context and the extra owns a column too
+// the context columns are after the other columns, and the extra columns are the last ones
 export function logColumns(events) {
   const fields = new Set();
-  const contextFields = new Set();
-  let hasPlainContext = false;
+  const subFields = { context: new Set(), extra: new Set() };
   for (const event of events) {
     for (const key of Object.keys(event)) {
-      if (HIDDEN_FIELDS.includes(key) || key === "context" || key === "info") continue;
+      if (HIDDEN_FIELDS.includes(key) || key in subFields) continue;
       fields.add(key);
     }
-    if (isObject(event.context)) for (const key of Object.keys(event.context)) contextFields.add(key);
-    else if (event.context !== undefined && event.context !== null) hasPlainContext = true;
+    for (const [key, subs] of Object.entries(subFields)) {
+      if (isObject(event[key])) for (const sub of Object.keys(event[key])) subs.add(sub);
+    }
   }
   const columns = [...fields].map((key) => ({ label: key, key }));
-  if (hasPlainContext) columns.push({ label: "context", key: "context" });
-  for (const sub of contextFields) columns.push({ label: `context.${sub}`, key: "context", sub });
-  if (events.some((event) => "info" in event)) columns.push({ label: "info", key: "info" });
+  for (const [key, subs] of Object.entries(subFields)) {
+    for (const sub of subs) columns.push({ label: `${key}.${sub}`, key, sub });
+  }
   return columns;
 }
 

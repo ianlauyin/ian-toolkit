@@ -248,14 +248,13 @@ pub(crate) fn parse_events(body: &str) -> Result<Vec<Value>, String> {
         .ok_or_else(|| "the log server response has no events".to_string())
 }
 
-// the log server gives the events of a day in the stored order, and the page shows the newest first
+// the log server gives the events of a day newest first, and the page keeps that order
 pub(crate) fn page_of(
     mut events: Vec<Value>,
     filters: &[Filter],
     page: usize,
     page_size: usize,
 ) -> LogsPage {
-    events.reverse();
     events.retain(|event| filters.iter().all(|filter| matches(event, filter)));
     let total = events.len();
     let events = events
@@ -271,8 +270,8 @@ pub(crate) fn page_of(
     }
 }
 
-// a field is a path of keys from the event, such as `info.body.limit`, and the value is the text of the field.
-// a key can hold dots, such as `body.limit` in `info`, so the path can match more than one key at each level
+// a field is a path of keys from the event, such as `extra.body.limit`, and the value is the text of the field.
+// a key can hold dots, such as `body.limit` in `extra`, so the path can match more than one key at each level
 fn matches(event: &Value, filter: &Filter) -> bool {
     match_path(event, &filter.field, &filter.value)
 }
