@@ -9,6 +9,7 @@
   --on-accent: #fff;
   --bad: #b53333;
   --warn: #b7791f;
+  --info: #2f6fb5;
   --overlay: rgb(20 20 19 / 0.5);
   --shadow-raised: 0 8px 24px rgb(20 20 19 / 0.1);
   --shadow-glow: 0 4px 14px rgb(201 100 66 / 0.35);
@@ -47,6 +48,7 @@
     --on-accent: #141413;
     --bad: #ef7f74;
     --warn: #e0b04a;
+    --info: #7aa7e0;
     --overlay: rgb(0 0 0 / 0.6);
     --shadow-raised: 0 8px 24px rgb(0 0 0 / 0.4);
     --shadow-glow: 0 4px 14px rgb(217 119 87 / 0.3);

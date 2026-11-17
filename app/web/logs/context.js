@@ -1,4 +1,6 @@
 const HIDDEN_FIELDS = ["id"];
+const MAP_FIELDS = ["context", "extra"];
+const LAST_FIELD = "error_message";
 export const PAGE_SIZES = [50, 100, 500, 1000];
 const HKT_OFFSET_MS = 8 * 60 * 60 * 1000;
 
@@ -11,31 +13,45 @@ export function pageCount(total, pageSize) {
 }
 
 const isObject = (value) => typeof value === "object" && value !== null && !Array.isArray(value);
+const hasKeys = (value) => isObject(value) && Object.keys(value).length > 0;
 
-// each field of an event owns a column, and each field of the context and the extra owns a column too
-// the context columns are after the other columns, and the extra columns are the last ones
+// each field of an event owns a column, in the order that the page first sees it
+// the context and the extra columns are after them, and the error_message column is the last one
 export function logColumns(events) {
   const fields = new Set();
-  const subFields = { context: new Set(), extra: new Set() };
   for (const event of events) {
     for (const key of Object.keys(event)) {
-      if (HIDDEN_FIELDS.includes(key) || key in subFields) continue;
-      fields.add(key);
-    }
-    for (const [key, subs] of Object.entries(subFields)) {
-      if (isObject(event[key])) for (const sub of Object.keys(event[key])) subs.add(sub);
+      if (!HIDDEN_FIELDS.includes(key) && !MAP_FIELDS.includes(key) && key !== LAST_FIELD) fields.add(key);
     }
   }
-  const columns = [...fields].map((key) => ({ label: key, key }));
-  for (const [key, subs] of Object.entries(subFields)) {
-    for (const sub of subs) columns.push({ label: `${key}.${sub}`, key, sub });
+  const keys = [...fields];
+  for (const key of MAP_FIELDS) if (events.some((event) => hasKeys(event[key]))) keys.push(key);
+  if (events.some((event) => LAST_FIELD in event)) keys.push(LAST_FIELD);
+  return keys.map((key) => ({ label: key, key }));
+}
+
+// the filter can use a column, or one key of the context or the extra
+export function filterFields(events) {
+  const fields = new Set(logColumns(events).map((column) => column.label));
+  for (const event of events) {
+    for (const key of MAP_FIELDS) {
+      if (isObject(event[key])) for (const sub of Object.keys(event[key])) fields.add(`${key}.${sub}`);
+    }
   }
-  return columns;
+  return [...fields];
+}
+
+// a context or an extra cell is a list of [key, text], and a different cell is null
+export function cellEntries(event, column) {
+  const value = event[column.key];
+  if (!MAP_FIELDS.includes(column.key) || !isObject(value)) return null;
+  return Object.entries(value).map(([key, item]) => [key, typeof item === "object" ? JSON.stringify(item) : String(item)]);
 }
 
 export function cellText(event, column) {
-  let value = event[column.key];
-  if (column.sub !== undefined) value = isObject(value) ? value[column.sub] : undefined;
+  const entries = cellEntries(event, column);
+  if (entries) return entries.map(([key, text]) => `${key}: ${text}`).join("\n");
+  const value = event[column.key];
   if (value === undefined || value === null) return "";
   if (column.key === "ts") return String(value).slice(0, 19).replace("T", " ");
   return typeof value === "object" ? JSON.stringify(value) : String(value);

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
-import { cellText, createLogs, logColumns, pageCount } from "../../logs/context.js";
+import { cellText, createLogs, filterFields, logColumns, pageCount } from "../../logs/context.js";
 
 function fakeApi() {
   const calls = [];
@@ -26,32 +26,38 @@ function fakeApi() {
 }
 
 describe("logs", () => {
-  it("makes a column for each field, each context field and each extra field, with extra last", () => {
+  it("puts context and extra after the other fields, and error_message last", () => {
     const events = [
-      { ts: "t1", id: "i1", level: "info", error_message: null, context: { ip: "1.1.1.1" }, extra: { "body.a": 1 } },
+      { ts: "t1", id: "i1", level: "info", error_message: null, context: { ip: "1.1.1.1" }, extra: {} },
       { ts: "t2", id: "i2", level: "warn", error_message: "boom", context: { user_agent: "ua" }, extra: { code: 5, ok: false } },
     ];
     const columns = logColumns(events);
-    assert.deepEqual(
-      columns.map((c) => c.label),
-      ["ts", "level", "error_message", "context.ip", "context.user_agent", "extra.body.a", "extra.code", "extra.ok"],
-    );
-    assert.equal(cellText(events[0], columns[2]), "");
-    assert.equal(cellText(events[1], columns[2]), "boom");
-    assert.equal(cellText(events[0], columns[3]), "1.1.1.1");
+    assert.deepEqual(columns.map((c) => c.label), ["ts", "level", "context", "extra", "error_message"]);
     assert.equal(cellText(events[0], columns[4]), "");
-    assert.equal(cellText(events[1], columns[4]), "ua");
-    assert.equal(cellText(events[0], columns[5]), "1");
-    assert.equal(cellText(events[1], columns[5]), "");
-    assert.equal(cellText(events[1], columns[7]), "false");
+    assert.equal(cellText(events[1], columns[4]), "boom");
     assert.equal(cellText({ ts: "2026-10-31T22:08:03.077818073+08:00" }, { key: "ts" }), "2026-10-31 22:08:03");
   });
 
-  it("makes no sub column for an empty context or extra", () => {
+  it("shows each key of context and extra on its own line", () => {
+    const event = { context: { ip: "1.1.1.1", user_agent: "ua" }, extra: { code: 5, ok: false } };
+    assert.equal(cellText(event, { key: "context" }), "ip: 1.1.1.1\nuser_agent: ua");
+    assert.equal(cellText(event, { key: "extra" }), "code: 5\nok: false");
+    assert.equal(cellText({ extra: {} }, { key: "extra" }), "");
+  });
+
+  it("makes no column for an empty context or extra", () => {
     assert.deepEqual(
       logColumns([{ ts: "t1", level: "info", context: {}, extra: {} }]).map((c) => c.label),
       ["ts", "level"],
     );
+  });
+
+  it("gives the columns and each context and extra key as filter fields", () => {
+    const events = [
+      { ts: "t1", context: { ip: "1.1.1.1" }, extra: {} },
+      { ts: "t2", context: { ip: "2.2.2.2" }, extra: { code: 5 } },
+    ];
+    assert.deepEqual(filterFields(events), ["ts", "context", "extra", "context.ip", "extra.code"]);
   });
 
   it("counts the pages", () => {

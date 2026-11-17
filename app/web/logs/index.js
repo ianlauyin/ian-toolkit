@@ -1,4 +1,4 @@
-import { PAGE_SIZES, cellText, createLogs, logColumns, pageCount } from "./context.js";
+import { PAGE_SIZES, cellEntries, cellText, createLogs, filterFields, logColumns, pageCount } from "./context.js";
 
 export function mount(main, api) {
   const logs = createLogs(api, render);
@@ -122,7 +122,18 @@ export function mount(main, api) {
       row.className = event.level ?? "";
       for (const column of columns) {
         const cell = row.insertCell();
-        cell.textContent = cellText(event, column);
+        const entries = cellEntries(event, column);
+        if (entries) {
+          cell.append(
+            ...entries.flatMap(([key, text], index) => [
+              ...(index ? ["\n"] : []),
+              Object.assign(document.createElement("b"), { textContent: key }),
+              `: ${text}`,
+            ]),
+          );
+        } else {
+          cell.textContent = cellText(event, column);
+        }
         cell.dataset.column = column.label;
       }
     }
@@ -141,7 +152,7 @@ export function mount(main, api) {
     pageSize.value = logs.state.pageSize;
     refresh.disabled = loading;
     fieldList.replaceChildren(
-      ...(result ? logColumns(result.events).map((c) => Object.assign(document.createElement("option"), { value: c.label })) : []),
+      ...(result ? filterFields(result.events).map((field) => Object.assign(document.createElement("option"), { value: field })) : []),
     );
     pills.replaceChildren(
       ...logs.state.filters.map((filter, index) => {

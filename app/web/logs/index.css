@@ -107,6 +107,8 @@
       border-collapse: collapse;
       background: var(--gradient-panel);
       font-size: 12px;
+      table-layout: fixed;
+      width: max-content;
 
       th,
       td {
@@ -115,9 +117,16 @@
         text-align: left;
         vertical-align: top;
         white-space: nowrap;
-        max-width: 600px;
+        width: 200px;
+        min-width: 200px;
+        max-width: 200px;
         overflow: hidden;
         text-overflow: ellipsis;
+      }
+
+      td[data-column="context"],
+      td[data-column="extra"] {
+        white-space: pre;
       }
 
       th {
@@ -146,7 +155,7 @@
       }
 
       tr.info > [data-column="level"] {
-        color: var(--accent);
+        color: var(--info);
       }
     }
   }
