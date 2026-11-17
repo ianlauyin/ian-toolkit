@@ -1,6 +1,6 @@
 # Ian's ToolKit
 
-Read `spec/app.md` for the app catalog.
+Before you read or change a file in `app/`, read `spec/app.md`.
 
 ## Work in a different repo
 
