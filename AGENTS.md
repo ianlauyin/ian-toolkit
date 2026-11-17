@@ -1,6 +1,6 @@
-# Ian's Personal Agentic Workspace
+# Ian's ToolKit
 
-Before you look up business logic, read `spec/catalog.md` for the specification index.
+Read `spec/app.md` for the app catalog.
 
 ## Work in a different repo
 
@@ -27,7 +27,6 @@ If the user tells you an error or a preference, update the applicable file in th
 | `rules/deployment.md` | Before you write or change deploy files, give deploy commands, or need a `gcloud` command |
 | `rules/git-convention.md` | Before you make a git commit |
 | `rules/report.md` | Before you write a report |
-| `rules/spec-update.md` | After you change the code |
 | `rules/writing.md` | Before you write or update a markdown file |
 
 ## Skills
@@ -35,7 +34,3 @@ If the user tells you an error or a preference, update the applicable file in th
 | File | When to read |
 | --- | --- |
 | `skills/fetch-logs.md` | Before you get the log events of a project |
-
-## App
-
-The workspace has a local server app in `app/`. Before you change it, read `spec/app/00_context.md`.

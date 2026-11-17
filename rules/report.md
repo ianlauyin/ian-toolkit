@@ -19,7 +19,6 @@ The report must have these sections, in this sequence:
 | Evidence | The evidence for each claim in the Cause section, as `rules/debugging.md` tells. Give the source of each item. |
 | Fix steps | The steps to fix the issue, in sequence. For each step, write who does it: the agent or the user. Write each command in full. |
 
-- If you changed the code, also add a "Spec files" section as `rules/spec-update.md` tells.
 - Write the text as `rules/writing.md` tells. This includes the rules for STE and for sensitive data.
 
 ## HTML
