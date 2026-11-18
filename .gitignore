@@ -10,8 +10,12 @@
 conf/
 
 # App
-app/target/
-app/data/
+backend/target/
+backend/data/
+frontend/node_modules/
+frontend/dist/
 
 # Reports
 report/
+
+.ed/

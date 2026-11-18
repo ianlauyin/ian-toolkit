@@ -1,0 +1,25 @@
+{
+  "name": "agentic-workspace-web",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.17.1",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "check": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@solidjs/router": "^2.0.0",
+    "@solidjs/web": "^2.0.0",
+    "ian-framework-fe": "file:../../ian-framework/framework_fe",
+    "solid-js": "^2.0.0"
+  },
+  "devDependencies": {
+    "@solidjs/vite-plugin": "^3.0.1",
+    "@types/node": "^22.20.5",
+    "typescript": "^5.9.3",
+    "vite": "^8.3.8",
+    "vitest": "5.0.3"
+  }
+}

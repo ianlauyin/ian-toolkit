@@ -1,27 +1,14 @@
 # Ian's ToolKit
 
-Before you read or change a file in `app/`, read `catalog/app.md`.
-
-## Work in a different repo
-
-- To edit the code of a different repo, call a subagent that works in that repo. Do not edit the code yourself.
-- After the subagent changes the code, do a code review of the changes in the target repo. The review must find bugs, and code that does not obey the instructions of the target repo.
-- If the review finds a problem, do not fix the code yourself. Call the subagent again to fix the problem. Then do the review again.
-
-## Update the workspace
-
-If the user tells you an error or a preference, update the applicable file in this workspace.
-
-- Write the change for all tasks, not only the current task.
-- Before you change a file, read it. Do not write the same instruction two times.
-- If the new instruction and an old instruction are different, replace the old instruction.
-- If the error is in a different repo, call the subagent to change the code in that repo.
+Before you read or change a file in `backend/`, read `catalog/backend.md`.
+Before you read or change a file in `frontend/`, read `catalog/frontend.md`.
 
 ## Rules
 
 | File | When to read |
 | --- | --- |
-| `rules/coding-style.md` | Before the first edit |
+| `rules/coding-style/backend.md` | Before the first edit in `backend/` |
+| `rules/coding-style/frontend.md` | Before the first edit in `frontend/` |
 | `rules/debugging.md` | Before you fix a bug or find the cause of an error |
 | `rules/env-file.md` | Before you read a file, run a command or use an env variable |
 | `rules/git-convention.md` | Before you make a git commit |
