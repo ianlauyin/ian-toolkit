@@ -6,14 +6,14 @@
 
 | path | description | decision |
 | --- | --- | --- |
-| `backend/src/main.rs` | Local HTTP server | The server listens on `http://127.0.0.1:47322`. The process folder is the repo root. The DB file is `backend/data/app.db`. The server does not log. |
-| `backend/src/router/mod.rs` | HTTP routes | The server uses `ian-framework-rs` for `GET /health`, `GET /version`, and the SPA route. `GET /health` returns `{"ok": true}`. `GET /version` returns the process version. A route under `/api` returns JSON. A route with no data returns `null`. An error returns `{"message": "<reason>"}`. A body that is not JSON returns 415. A JSON body without a necessary field returns 422. Each other `GET` returns a file from `frontend/dist`, or `index.html` when that file is missing. A missing `frontend/dist` returns 500. |
+| `backend/src/main.rs` | Local HTTP server | The server does not log. |
+| `backend/src/router/mod.rs` | HTTP routes | `GET /health` returns `{"ok": true}`. `GET /version` returns the process version. A body that is not JSON returns 415. A JSON body without a necessary field returns 422. Each other `GET` returns a file from `frontend/dist`, or `index.html` when that file is missing. A missing `frontend/dist` returns 500. |
 | `backend/src/router/api/mod.rs` | API checks | A request to `/api` that is not from the same origin returns 403. |
-| `backend/src/router/api/public/page/` | Saved page data | One page has one JSON value in the local DB, stored by page name. `GET /api/page` returns that JSON, or `null` when the page has no save. `PUT /api/page` replaces the last save. A page name has only letters, digits, and `-`. A bad request returns 400. A failed DB call returns 502. |
-| `backend/src/router/api/public/projects/list.rs` | Project list | `GET /api/projects` returns each project in `conf/projects.json`. A failed read of `conf/projects.json` returns 500. |
-| `backend/src/router/api/public/notes_assign/assign.rs` | Note assign | `POST /api/notes-assign` starts one local agent in that project folder, gives the note text as the task, tells the agent to obey `AGENTS.md`, and returns the chat id. An empty note or an unknown project returns 400. |
-| `backend/src/open_behaviour.rs` | Local agent run | The first agent is a local Cursor agent on Claude Sonnet 5.5 with medium effort. It can edit files and run commands with no approval, and it calls no subagent. The agent continues when the page closes or the server restarts. When that agent fails, a local Grok 4.7 agent with high effort takes the same task. A failed follow-up does not start the Grok agent. |
-| `backend/src/router/api/public/open_behaviour_progress/progress.rs` | Agent progress | `GET /api/open-behaviour-progress` returns the status and the steps of the chat. A bad chat id or a chat with no log returns 400. |
-| `backend/src/router/api/public/open_behaviour_followup/followup.rs` | Agent follow-up | `POST /api/open-behaviour-followup` sends text to the same session after the current run has ended. One chat has one follow-up at a time. A bad chat id, an empty follow-up, a chat with no log, or an agent that still runs returns 400. |
-| `backend/src/router/api/public/logs_apps/list.rs` | Log apps | `GET /api/logs-apps` returns the servers and the apps in `conf/log-server.json`. A failed read of the config file returns 500, and the reason does not contain the key. |
-| `backend/src/router/api/public/logs_events/load.rs` | Log events | `GET /api/logs-events` applies the filters, then returns one page of events for that server, app, and date, newest first. The read uses the method of `skills/fetch-logs.md` and keeps at most the last 1000 events of the date. The log server key is a curl header on stdin, so the process list does not show the key. A key in the field path can contain a dot. A bad server, app, date, page, page size, or filter returns 400. A failed read of the log server returns 500, and the reason does not contain the key. |
+| `backend/src/router/api/public/page/` | Saved page data | |
+| `backend/src/router/api/public/projects/list.rs` | Project list | The list follows the order of the keys in `conf/projects.json`. |
+| `backend/src/router/api/public/notes_assign/assign.rs` | Note assign | |
+| `backend/src/open_behaviour.rs` | Local agent run | The agent can edit files and run commands with no approval. The agent calls no subagent. The agent continues when the page closes or the server restarts. |
+| `backend/src/router/api/public/open_behaviour_progress/progress.rs` | Agent progress | |
+| `backend/src/router/api/public/open_behaviour_followup/followup.rs` | Agent follow-up | |
+| `backend/src/router/api/public/logs_apps/list.rs` | Log apps | |
+| `backend/src/router/api/public/logs_events/load.rs` | Log events | The events are newest first. A key in the field path can contain a dot. |
