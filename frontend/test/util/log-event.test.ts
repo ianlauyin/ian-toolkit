@@ -15,6 +15,11 @@ describe("log events", () => {
     assert.equal(cellText({ ts: "2026-10-31T22:08:03.077818073+08:00" }, { key: "ts", label: "ts" }), "2026-10-31 22:08:03");
   });
 
+  it("shows the minutes and seconds of a log time", () => {
+    assert.equal(cellText({ ts: new Date("2026-11-20T23:26:13.144244269+08:00") }, { key: "ts", label: "ts" }), "2026-11-20 23:26:13");
+    assert.equal(cellText({ ts: new Date("2026-11-20T00:05:09+08:00") }, { key: "ts", label: "ts" }), "2026-11-20 00:05:09");
+  });
+
   it("shows each key of context and extra on its own line", () => {
     const event = { context: { ip: "1.1.1.1", user_agent: "ua" }, extra: { code: 5, ok: false } };
     assert.equal(cellText(event, { key: "context", label: "context" }), "ip: 1.1.1.1\nuser_agent: ua");
