@@ -12,8 +12,8 @@ conf/
 # App
 backend/target/
 backend/data/
+backend/frontend/dist/
 frontend/node_modules/
-frontend/dist/
 
 # Reports
 report/

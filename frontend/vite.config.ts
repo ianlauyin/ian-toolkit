@@ -12,6 +12,10 @@ export default defineConfig({
             {find: "module/", replacement: fileURLToPath(new URL("./src/module/", import.meta.url))},
         ],
     },
+    build: {
+        outDir: "../backend/frontend/dist",
+        emptyOutDir: true,
+    },
     test: {
         environment: "node",
     },

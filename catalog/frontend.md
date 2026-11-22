@@ -7,6 +7,7 @@
 | path | description | decision |
 | --- | --- | --- |
 | `frontend/index.html` | App name | |
+| `frontend/vite.config.ts` | Build and dev server | The build writes to `backend/frontend/dist`, because the server starts in `backend/` and reads `frontend/dist` from its working folder. |
 | `frontend/src/index.tsx` | Page routes | The page does not use Logger. |
 | `frontend/src/context.ts` | Version | The page reloads when `GET /version` returns a different version. |
 | `frontend/src/component/Shell/` | Nav | |

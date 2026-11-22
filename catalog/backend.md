@@ -6,8 +6,8 @@
 
 | path | description | decision |
 | --- | --- | --- |
-| `backend/src/main.rs` | Local HTTP server | The server does not log. Start the server in the repo root, because the SPA folder `frontend/dist` is a path from the working folder. |
-| `backend/src/router/mod.rs` | HTTP routes | `GET /health` returns `{"ok": true}`. `GET /version` returns the process version. A body that is not JSON returns 415. A JSON body without a necessary field returns 422. Each other `GET` returns a file from `frontend/dist`, or `index.html` when that file is missing. A missing `frontend/dist` returns 500. |
+| `backend/src/main.rs` | Local HTTP server | The server does not log. Start the server in `backend/`, because the SPA folder `frontend/dist` is a path from the working folder. The frontend build writes that folder to `backend/frontend/dist`. |
+| `backend/src/router/mod.rs` | HTTP routes | `GET /health` returns `{"ok": true}`. `GET /version` returns the process version. A body that is not JSON returns 415. A JSON body without a necessary field returns 422. Each other `GET` returns a file from `backend/frontend/dist`, or `index.html` when that file is missing. A missing `backend/frontend/dist` returns 500. |
 | `backend/src/router/api/mod.rs` | API checks | A request to `/api` that is not from the same origin returns 403. |
 | `backend/src/router/api/public/page/` | Saved page data | |
 | `backend/src/router/api/public/projects/list.rs` | Project list | The list follows the order of the keys in `conf/projects.json`. |
