@@ -1,13 +1,12 @@
-import { ajax } from "ian-framework-fe";
+import {ajax} from "ian-framework-fe";
 
 export interface NotesAssignAssignRequest {
-  tab: string;
-  text: string;
+    tab: string;
+    text: string;
 }
 
 export interface NotesAssignAssignResponse {
-  chat: string;
+    chat: string;
 }
 
-export const notesAssignAssignAjax = (request: NotesAssignAssignRequest): Promise<NotesAssignAssignResponse> =>
-  ajax<NotesAssignAssignRequest, NotesAssignAssignResponse>("/notes-assign", "POST", request);
+export const notesAssignAssignAjax = (request: NotesAssignAssignRequest): Promise<NotesAssignAssignResponse> => ajax("/notes-assign", "POST", request);

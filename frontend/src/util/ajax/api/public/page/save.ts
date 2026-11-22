@@ -1,9 +1,8 @@
-import { ajax } from "ian-framework-fe";
+import {ajax} from "ian-framework-fe";
 
 export interface PageSaveRequest {
-  name: string;
-  data: Record<string, any>;
+    name: string;
+    data: Record<string, any>;
 }
 
-export const pageSaveAjax = (request: PageSaveRequest): Promise<null> =>
-  ajax<PageSaveRequest, null>("/page", "PUT", request);
+export const pageSaveAjax = (request: PageSaveRequest): Promise<null> => ajax("/page", "PUT", request);

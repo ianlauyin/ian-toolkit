@@ -1,10 +1,10 @@
 export interface ProgressStep {
-  kind: string;
-  text: string;
+    kind: string;
+    text: string;
 }
 
 export interface ProgressResponse {
-  status: string;
-  steps: ProgressStep[];
-  error?: string;
+    status: string;
+    steps: ProgressStep[];
+    error?: string;
 }

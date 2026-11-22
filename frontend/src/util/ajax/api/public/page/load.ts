@@ -1,10 +1,9 @@
-import { ajax } from "ian-framework-fe";
+import {ajax} from "ian-framework-fe";
 
 export interface PageLoadRequest {
-  name: string;
+    name: string;
 }
 
 export type PageLoadResponse = Record<string, any> | null;
 
-export const pageLoadAjax = (request: PageLoadRequest): Promise<PageLoadResponse> =>
-  ajax<PageLoadRequest, PageLoadResponse>("/page", "GET", request);
+export const pageLoadAjax = (request: PageLoadRequest): Promise<PageLoadResponse> => ajax("/page", "GET", request);
