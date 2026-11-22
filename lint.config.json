@@ -1,0 +1,9 @@
+{
+  "ruleset": "project",
+  "fe": {
+    "paths": ["frontend"]
+  },
+  "be": {
+    "paths": ["backend"]
+  }
+}
