@@ -17,10 +17,6 @@ main {
   max-width: 980px;
   margin: 0 auto;
   padding: 40px 48px 80px;
-
-  &:has(> .logs-page) {
-    max-width: none;
-  }
 }
 
 h1,

@@ -21,9 +21,7 @@ The backend crate is `backend/`. Its source is in `backend/src/`.
 
 ## Configuration
 
-- Read `conf/projects.json` and `conf/log-server.json` from the repo root.
-- Read the log server key from `.env` at the repo root.
-- Do not put the key in an error message.
+- Read `conf/projects.json` from the repo root.
 - The bind address is a constant in `backend/src/main.rs`.
 
 ## State

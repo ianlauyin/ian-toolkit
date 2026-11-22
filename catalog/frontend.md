@@ -14,4 +14,3 @@
 | `frontend/src/style/theme-dark.css` | Dark tokens | |
 | `frontend/src/page/todo/` | TODO board | A save that has the list important or the list items, or a card field text, loads into Pending. |
 | `frontend/src/page/notes/` | Notes page | When the agent fails after the fallback, the page clears the assigned task. |
-| `frontend/src/page/logs/` | Logs page | The control panel does not keep its state. |

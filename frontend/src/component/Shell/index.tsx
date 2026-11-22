@@ -7,7 +7,6 @@ import "./index.css";
 const PAGES = [
   { path: "/todo", title: "TODO" },
   { path: "/notes", title: "Notes" },
-  { path: "/logs", title: "Logs" },
 ];
 
 export default function Shell(props: { children?: JSX.Element }) {

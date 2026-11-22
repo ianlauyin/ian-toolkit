@@ -15,5 +15,3 @@
 | `backend/src/open_behaviour.rs` | Local agent run | The agent can edit files and run commands with no approval. The agent calls no subagent. The agent continues when the page closes or the server restarts. |
 | `backend/src/router/api/public/open_behaviour_progress/progress.rs` | Agent progress | |
 | `backend/src/router/api/public/open_behaviour_followup/followup.rs` | Agent follow-up | |
-| `backend/src/router/api/public/logs_apps/list.rs` | Log apps | |
-| `backend/src/router/api/public/logs_events/load.rs` | Log events | The events are newest first. A key in the field path can contain a dot. |

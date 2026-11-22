@@ -134,36 +134,6 @@ async fn bad_requests_return_json_errors() {
         (StatusCode::BAD_REQUEST, json!("The note has no text."))
     );
 
-    let (status, body) = send(
-        &app,
-        get("/api/logs-events?server=one&app=my-app&date=2026-10-31&page=0"),
-    )
-    .await;
-    assert_eq!(
-        (status, error_of(&body)),
-        (StatusCode::BAD_REQUEST, json!("Bad page."))
-    );
-
-    let (status, body) = send(
-        &app,
-        get("/api/logs-events?server=one&app=my-app&date=2026-10-31&page=1&page_size=10"),
-    )
-    .await;
-    assert_eq!(
-        (status, error_of(&body)),
-        (StatusCode::BAD_REQUEST, json!("Bad page size."))
-    );
-
-    let (status, body) = send(
-        &app,
-        get("/api/logs-events?server=one&app=my-app&date=2026-10-31&page=1&filters=not-json"),
-    )
-    .await;
-    assert_eq!(
-        (status, error_of(&body)),
-        (StatusCode::BAD_REQUEST, json!("Bad filters."))
-    );
-
     let text = Request::put("/api/page")
         .header("sec-fetch-site", "same-origin")
         .body(Body::from(r#"{"name":"a","data":1}"#))

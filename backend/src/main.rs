@@ -7,7 +7,6 @@ use crate::db::Db;
 use crate::router::state::AppState;
 
 mod db;
-mod logs;
 mod notes;
 mod open_behaviour;
 pub(crate) mod router;
