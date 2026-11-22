@@ -1,3 +1,6 @@
+mod api;
+mod shown_result;
+
 use std::sync::Arc;
 
 use axum::Router;
@@ -12,8 +15,6 @@ use tower::ServiceExt;
 use crate::db::Db;
 use crate::router::router;
 use crate::router::state::AppState;
-
-mod api;
 
 fn test_app() -> Router {
     router(AppState {

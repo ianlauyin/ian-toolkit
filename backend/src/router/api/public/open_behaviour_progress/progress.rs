@@ -1,17 +1,14 @@
-use axum::Json;
 use axum::extract::Query;
+use axum::response::Response;
 use serde::Deserialize;
 
-use crate::open_behaviour::Progress;
-use crate::open_behaviour::ResolveError;
+use crate::router::shown_result::shown_result;
 
 #[derive(Deserialize)]
 pub(super) struct ProgressRequest {
     chat: String,
 }
 
-pub(super) async fn progress(
-    Query(request): Query<ProgressRequest>,
-) -> Result<Json<Progress>, ResolveError> {
-    crate::open_behaviour::progress(&request.chat).map(Json)
+pub(super) async fn progress(Query(request): Query<ProgressRequest>) -> Response {
+    shown_result(crate::open_behaviour::progress(&request.chat))
 }

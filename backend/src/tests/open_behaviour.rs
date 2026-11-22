@@ -3,10 +3,9 @@ use std::path::{Path, PathBuf};
 use std::thread;
 use std::time::Duration;
 
-use axum::body::to_bytes;
-use axum::http::StatusCode;
-use axum::response::IntoResponse;
 use serde_json::json;
+
+use ian_framework_rs::http::error_code;
 
 use crate::open_behaviour::*;
 
@@ -31,17 +30,17 @@ fn valid_chat_accepts_letters_digits_and_dash() {
 }
 
 #[test]
-fn project_root_expands_a_home_path_and_keeps_an_other_path() {
-    let home = "/home/user";
+fn project_root_joins_a_relative_path_to_the_root_and_keeps_an_absolute_path() {
+    let root = Path::new("/work/toolkit");
     assert_eq!(
-        project_root(&json!({ "path": "~/my-app" }), home).unwrap(),
-        Path::new(home).join("my-app")
+        project_root(&json!({ "path": "../my-app" }), root).unwrap(),
+        root.join("../my-app")
     );
     assert_eq!(
-        project_root(&json!({ "path": "/work/my-app" }), home).unwrap(),
+        project_root(&json!({ "path": "/work/my-app" }), root).unwrap(),
         Path::new("/work/my-app")
     );
-    assert!(project_root(&json!({}), home).is_none());
+    assert!(project_root(&json!({}), root).is_none());
 }
 
 fn step(kind: &'static str, text: &str) -> Step {
@@ -172,25 +171,17 @@ fn a_grok_start_line_keeps_one_agent_after_a_restart() {
 
 #[test]
 fn one_follow_up_waits_while_another_holds_the_chat() {
-    let guard = LOCAL_LOCK.lock().unwrap();
+    let guard = local_lock();
     let handle = thread::spawn(|| followup_local(Path::new("missing-chat.log"), "More."));
     thread::sleep(Duration::from_millis(100));
     let finished = handle.is_finished();
     drop(guard);
     let error = handle.join().unwrap().unwrap_err();
     assert!(!finished);
-    assert!(
-        matches!(error, ResolveError::BadItem(message) if message == "The agent is still working.")
+    assert_eq!(
+        (error.code(), error.message()),
+        (error_code::BAD_REQUEST, "The agent is still working.")
     );
-}
-
-#[tokio::test]
-async fn a_failed_run_returns_its_text() {
-    let response = ResolveError::Failed("failed to start the agent".to_string()).into_response();
-    assert_eq!(response.status(), StatusCode::INTERNAL_SERVER_ERROR);
-    let bytes = to_bytes(response.into_body(), usize::MAX).await.unwrap();
-    let body: serde_json::Value = serde_json::from_slice(&bytes).unwrap();
-    assert_eq!(body["message"], "failed to start the agent");
 }
 
 #[test]

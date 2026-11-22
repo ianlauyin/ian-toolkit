@@ -1,8 +1,8 @@
 use axum::Json;
+use axum::response::Response;
 use serde::Deserialize;
 
-use crate::open_behaviour::Progress;
-use crate::open_behaviour::ResolveError;
+use crate::router::shown_result::shown_result;
 
 #[derive(Deserialize)]
 pub(super) struct FollowupRequest {
@@ -10,8 +10,9 @@ pub(super) struct FollowupRequest {
     text: String,
 }
 
-pub(super) async fn followup(
-    Json(request): Json<FollowupRequest>,
-) -> Result<Json<Progress>, ResolveError> {
-    crate::open_behaviour::followup(&request.chat, &request.text).map(Json)
+pub(super) async fn followup(Json(request): Json<FollowupRequest>) -> Response {
+    shown_result(crate::open_behaviour::followup(
+        &request.chat,
+        &request.text,
+    ))
 }

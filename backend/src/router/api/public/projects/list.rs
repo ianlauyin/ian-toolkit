@@ -1,11 +1,11 @@
 use std::path::Path;
 
-use axum::Json;
+use axum::response::Response;
 use serde::Serialize;
 
-use crate::open_behaviour::PROJECTS_FILE;
-use crate::open_behaviour::ResolveError;
+use crate::env::PROJECTS_FILE;
 use crate::open_behaviour::read_projects;
+use crate::router::shown_result::shown_result;
 
 #[derive(Serialize)]
 pub(super) struct Project {
@@ -13,15 +13,14 @@ pub(super) struct Project {
     name: String,
 }
 
-pub(super) async fn list() -> Result<Json<Vec<Project>>, ResolveError> {
-    let projects = read_projects(Path::new(PROJECTS_FILE)).map_err(ResolveError::Failed)?;
-    Ok(Json(
+pub(super) async fn list() -> Response {
+    shown_result(read_projects(Path::new(PROJECTS_FILE)).map(|projects| {
         projects
             .keys()
             .map(|id| Project {
                 id: id.clone(),
                 name: id.clone(),
             })
-            .collect(),
-    ))
+            .collect::<Vec<_>>()
+    }))
 }
