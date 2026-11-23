@@ -19,7 +19,6 @@ Before you read or change a file in `frontend/`, read `catalog/frontend.md`.
 | --- | --- |
 | `skills/fetch-logs.md` | Before you get the log events of a project |
 
-
 ## Coding style
 
 Always value performance/efficiency/simplicity over strict correctness/defensive design, let me know if there is any trade off to make.
