@@ -3,6 +3,8 @@
 Before you read or change a file in `backend/`, read `catalog/backend.md`.
 Before you read or change a file in `frontend/`, read `catalog/frontend.md`.
 
+Always value performance/efficiency/simplicity over strictly correctness/defensive design, let me know if there is any trade off to make.
+
 ## Rules
 
 | File | When to read |
