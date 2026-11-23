@@ -1,5 +1,5 @@
-.notes-page {
-    > .error {
+#notes-page {
+    > .notes-page-error {
         color: var(--bad);
         white-space: pre-wrap;
     }
@@ -25,13 +25,13 @@
                 color: var(--text);
             }
 
-            &.on {
+            &.notes-page-on {
                 color: var(--accent);
                 border-bottom-color: var(--accent);
                 font-weight: 600;
             }
 
-            > .badge {
+            > .notes-page-badge {
                 display: inline-block;
                 min-width: 18px;
                 margin-left: 6px;
@@ -50,7 +50,7 @@
                 }
             }
 
-            &.on > .badge {
+            &.notes-page-on > .notes-page-badge {
                 background: var(--gradient-accent);
                 color: var(--on-accent);
             }
@@ -87,7 +87,7 @@
         flex-direction: column;
         gap: 12px;
 
-        > .empty {
+        > .notes-page-empty {
             color: var(--muted);
             margin: 0;
         }
@@ -102,13 +102,13 @@
         border: 1px solid var(--line);
         border-radius: var(--radius-md);
 
-        > .text {
+        > .notes-page-text {
             margin: 0;
             white-space: pre-wrap;
             overflow-wrap: anywhere;
         }
 
-        > .actions {
+        > .notes-page-actions {
             display: flex;
             gap: 8px;
 
@@ -117,11 +117,11 @@
             }
         }
 
-        > .text[hidden] {
+        > .notes-page-text[hidden] {
             display: none;
         }
 
-        > .edit-form {
+        > .notes-page-edit-form {
             display: flex;
             flex-direction: column;
             gap: 8px;
@@ -136,7 +136,7 @@
             }
         }
 
-        > .assign-chat {
+        > .notes-page-assign-chat {
             margin: 0;
             color: var(--muted);
             font-size: 13px;
@@ -147,7 +147,7 @@
             }
         }
 
-        > .assign-progress {
+        > .notes-page-assign-progress {
             display: flex;
             flex-direction: column;
             gap: 6px;
@@ -156,24 +156,24 @@
                 display: none;
             }
 
-            > .state {
+            > .notes-page-state {
                 margin: 0;
                 font-size: 12px;
                 font-weight: 600;
                 color: var(--muted);
 
-                &.finished {
+                &.notes-page-finished {
                     color: var(--accent);
                 }
 
-                &.failed,
-                &.stopped,
-                &.error {
+                &.notes-page-failed,
+                &.notes-page-stopped,
+                &.notes-page-error {
                     color: var(--bad);
                 }
             }
 
-            > .steps {
+            > .notes-page-steps {
                 margin: 0;
                 padding: 8px 10px;
                 list-style: none;
@@ -195,19 +195,19 @@
                     overflow-wrap: anywhere;
                 }
 
-                > .tool {
+                > .notes-page-tool {
                     color: var(--muted);
                     font-family: var(--font-mono);
                     font-size: 12px;
                 }
 
-                > .output {
+                > .notes-page-output {
                     color: var(--bad);
                     font-family: var(--font-mono);
                     font-size: 12px;
                 }
 
-                > .reply {
+                > .notes-page-reply {
                     align-self: flex-end;
                     max-width: 80%;
                     padding: 4px 8px;
@@ -216,7 +216,7 @@
                 }
             }
 
-            > .followup-form {
+            > .notes-page-followup-form {
                 display: flex;
                 align-items: flex-end;
                 gap: 8px;

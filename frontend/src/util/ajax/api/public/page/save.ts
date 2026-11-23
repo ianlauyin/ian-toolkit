@@ -5,4 +5,6 @@ export interface PageSaveRequest {
     data: Record<string, any>;
 }
 
-export const pageSaveAjax = (request: PageSaveRequest): Promise<null> => ajax("/page", "PUT", request);
+export function pageSaveAjax(request: PageSaveRequest): Promise<null> {
+    return ajax("/page", "PUT", request);
+}

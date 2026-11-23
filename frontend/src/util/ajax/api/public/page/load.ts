@@ -6,4 +6,6 @@ export interface PageLoadRequest {
 
 export type PageLoadResponse = Record<string, any> | null;
 
-export const pageLoadAjax = (request: PageLoadRequest): Promise<PageLoadResponse> => ajax("/page", "GET", request);
+export function pageLoadAjax(request: PageLoadRequest): Promise<PageLoadResponse> {
+    return ajax("/page", "GET", request);
+}

@@ -6,4 +6,6 @@ export interface OpenBehaviourProgressProgressRequest {
     chat: string;
 }
 
-export const openBehaviourProgressProgressAjax = (request: OpenBehaviourProgressProgressRequest): Promise<ProgressResponse> => ajax("/open-behaviour-progress", "GET", request);
+export function openBehaviourProgressProgressAjax(request: OpenBehaviourProgressProgressRequest): Promise<ProgressResponse> {
+    return ajax("/open-behaviour-progress", "GET", request);
+}

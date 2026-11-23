@@ -61,7 +61,7 @@ vi.mock("util/ajax/api/public/open_behaviour_followup/followup", () => ({
     },
 }));
 
-import {createNotesPage} from "../../../src/page/notes/context";
+import {NotesPageContext} from "../../../src/page/notes/context";
 
 beforeEach(() => {
     fake.notes = null;
@@ -80,7 +80,7 @@ beforeEach(() => {
 
 describe("notes", () => {
     it("adds a note and saves it", async () => {
-        const notes = createNotesPage();
+        const notes = new NotesPageContext();
         await notes.load();
         assert.equal(await notes.addNote("my-app", "  Add a route.  "), true);
         assert.equal(notes.store.notes["my-app"][0].text, "Add a route.");
@@ -89,7 +89,7 @@ describe("notes", () => {
     });
 
     it("edits a note and keeps its id and its task", async () => {
-        const notes = createNotesPage();
+        const notes = new NotesPageContext();
         await notes.load();
         await notes.addNote("my-app", "Add a route.");
         const note = notes.store.notes["my-app"][0];
@@ -102,7 +102,7 @@ describe("notes", () => {
     });
 
     it("assigns a note and saves the chat", async () => {
-        const notes = createNotesPage();
+        const notes = new NotesPageContext();
         await notes.load();
         await notes.addNote("my-app", "Add a route.");
         const note = notes.store.notes["my-app"][0];
@@ -114,7 +114,7 @@ describe("notes", () => {
     });
 
     it("keeps the note open when the start fails", async () => {
-        const notes = createNotesPage();
+        const notes = new NotesPageContext();
         await notes.load();
         await notes.addNote("my-app", "Add a route.");
         fake.failAssign = true;
@@ -128,7 +128,7 @@ describe("notes", () => {
         fake.notes = {"my-app": [{id: "n1", text: "x"}]};
         fake.assigns = {[key]: "c1"};
         fake.progress = {c1: {status: "failed", steps: []}};
-        const notes = createNotesPage();
+        const notes = new NotesPageContext();
         await notes.load();
         await notes.refreshProgress();
         assert.deepEqual(notes.store.notes["my-app"], [{id: "n1", text: "x"}]);
@@ -142,7 +142,7 @@ describe("notes", () => {
         const key = "my-app/n1";
         fake.notes = {"my-app": [{id: "n1", text: "x"}]};
         fake.assigns = {[key]: "c1"};
-        const notes = createNotesPage();
+        const notes = new NotesPageContext();
         await notes.load();
         await notes.removeNote("my-app", {id: "n1", text: "x"});
         assert.deepEqual(notes.store.notes["my-app"], []);
@@ -152,7 +152,7 @@ describe("notes", () => {
     it("shows the error when the load fails and keeps the notes", async () => {
         fake.failProjects = true;
         fake.notes = {"my-app": [{id: "n1", text: "x"}]};
-        const notes = createNotesPage();
+        const notes = new NotesPageContext();
         await notes.load();
         assert.equal(notes.store.loaded, false);
         assert.deepEqual(notes.store.notes, {});
@@ -160,7 +160,7 @@ describe("notes", () => {
     });
 
     it("keeps the last saved notes when a save fails", async () => {
-        const notes = createNotesPage();
+        const notes = new NotesPageContext();
         await notes.load();
         await notes.addNote("my-app", "Add a route.");
         const note = notes.store.notes["my-app"][0];
@@ -173,7 +173,7 @@ describe("notes", () => {
     });
 
     it("keeps the note open when the assign save fails", async () => {
-        const notes = createNotesPage();
+        const notes = new NotesPageContext();
         await notes.load();
         await notes.addNote("my-app", "Add a route.");
         fake.failSave = true;
@@ -187,7 +187,7 @@ describe("notes", () => {
         fake.notes = {"my-app": [{id: "n1", text: "x"}]};
         fake.assigns = {[key]: "c1"};
         fake.progress = {c1: {status: "stopped", steps: []}};
-        const notes = createNotesPage();
+        const notes = new NotesPageContext();
         await notes.load();
         await notes.refreshProgress();
         assert.deepEqual(notes.store.assigns, {[key]: "c1"});
@@ -195,7 +195,7 @@ describe("notes", () => {
 
         fake.progress = {c1: {status: "failed", steps: []}};
         fake.failSave = true;
-        const again = createNotesPage();
+        const again = new NotesPageContext();
         await again.load();
         await again.refreshProgress();
         assert.deepEqual(again.store.assigns, {[key]: "c1"});
@@ -210,7 +210,7 @@ describe("notes", () => {
         fake.notes = {"my-app": [{id: "n1", text: "x"}]};
         fake.assigns = {[key]: "c1"};
         fake.progress = {c1: {status: "finished", steps: []}};
-        const notes = createNotesPage();
+        const notes = new NotesPageContext();
         await notes.load();
         fake.hangAssign = true;
         const starting = notes.assign("my-app", {id: "n1-start", text: "y"});
@@ -235,7 +235,7 @@ describe("notes", () => {
             ],
         };
         fake.assigns = {"my-app/n2": "c2"};
-        const notes = createNotesPage();
+        const notes = new NotesPageContext();
         await notes.load();
         fake.hangAssign = true;
         const pending = notes.assign("my-app", {id: "n1", text: "x"});
@@ -245,7 +245,7 @@ describe("notes", () => {
         fake.hangAssign = false;
         fake.notes = {"my-app": [{id: "n1", text: "x"}]};
         fake.assigns = {};
-        const again = createNotesPage();
+        const again = new NotesPageContext();
         await again.load();
         await again.assign("my-app", {id: "n1", text: "x"});
         assert.equal(again.store.assigns["my-app/n1"], "chat_1");
@@ -257,7 +257,7 @@ describe("notes", () => {
         fake.notes = {"my-app": [{id: "n1", text: "x"}]};
         fake.assigns = {[key]: "c1"};
         fake.progress = {c1: {status: "finished", steps: []}};
-        const notes = createNotesPage();
+        const notes = new NotesPageContext();
         await notes.load();
         assert.equal(await notes.followup(key, "More."), true);
         assert.equal(notes.store.progress[key].status, "running");
@@ -274,7 +274,7 @@ describe("notes", () => {
         for (const status of ["finished", "failed", "stopped", "error"]) {
             fake.progressCalls = 0;
             fake.progress = {c1: {status, steps: []}};
-            const notes = createNotesPage();
+            const notes = new NotesPageContext();
             await notes.load();
             await notes.refreshProgress();
             const calls = fake.progressCalls;

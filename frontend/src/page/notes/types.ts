@@ -29,16 +29,3 @@ export interface NotesPageStore {
     tab: string;
     addText: string;
 }
-
-export interface NotesPageContext {
-    store: NotesPageStore;
-    load: () => Promise<void>;
-    addNote: (tab: string, text: string) => Promise<boolean>;
-    editNote: (tab: string, note: Note, text: string) => Promise<boolean>;
-    removeNote: (tab: string, note: Note) => Promise<void>;
-    assign: (tab: string, note: Note) => Promise<void>;
-    followup: (key: string, text: string) => Promise<boolean>;
-    refreshProgress: () => Promise<void>;
-    setTab: (tab: string) => void;
-    setAddText: (text: string) => void;
-}

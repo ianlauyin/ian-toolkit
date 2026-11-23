@@ -28,7 +28,7 @@ export function Shell(props: {children?: JSX.Element}) {
     };
 
     return (
-        <>
+        <div class="g-shell">
             <nav class="g-nav">
                 {PAGES.map(page => (
                     <a href={page.path} class={{"g-on": location.pathname === page.path}} onClick={event => open(event, page.path)}>
@@ -37,6 +37,6 @@ export function Shell(props: {children?: JSX.Element}) {
                 ))}
             </nav>
             <main>{props.children}</main>
-        </>
+        </div>
     );
 }

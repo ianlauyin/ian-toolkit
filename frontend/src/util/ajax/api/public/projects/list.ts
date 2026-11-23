@@ -5,4 +5,6 @@ export interface ProjectsListResponse {
     name: string;
 }
 
-export const projectsListAjax = (): Promise<ProjectsListResponse[]> => ajax("/projects", "GET");
+export function projectsListAjax(): Promise<ProjectsListResponse[]> {
+    return ajax("/projects", "GET");
+}

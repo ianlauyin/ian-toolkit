@@ -1,15 +1,13 @@
 import {onSettled} from "solid-js";
 
-import {createTodoPage} from "./context";
+import {TodoPageContext} from "./context";
 import type {Card, Section} from "./types";
 import "./index.css";
 
 const TITLES: Record<Section, string> = {pending: "Pending", ongoing: "Ongoing", reviewing: "Reviewing"};
 
-type Gap = {section: Section; gap: number};
-
 export function TodoPage() {
-    const page = createTodoPage();
+    const page = new TodoPageContext();
     let board: HTMLDivElement | undefined;
     let addDialog: HTMLDialogElement | undefined;
     let addForm: HTMLFormElement | undefined;
@@ -22,8 +20,8 @@ export function TodoPage() {
     onSettled(() => void page.load());
 
     function clearDropMarks() {
-        board?.querySelectorAll(".todo-page-card").forEach(row => row.classList.remove("before", "after"));
-        board?.querySelectorAll(".todo-page-section").forEach(section => section.classList.remove("drop-end"));
+        board?.querySelectorAll(".todo-page-card").forEach(row => row.classList.remove("todo-page-before", "todo-page-after"));
+        board?.querySelectorAll(".todo-page-section").forEach(section => section.classList.remove("todo-page-drop-end"));
     }
 
     function column(section: Section) {
@@ -85,35 +83,35 @@ export function TodoPage() {
 
     return (
         <div id="todo-page" class="todo-page" ref={board}>
-            <div class="header">
+            <div class="todo-page-header">
                 <h1>TODO</h1>
                 <button class="g-button add-open" type="button" disabled={!page.store.loaded} onClick={openAdd}>
                     Add
                 </button>
             </div>
-            <p class="error" hidden={!page.store.error}>
+            <p class="todo-page-error" hidden={!page.store.error}>
                 {page.store.error}
             </p>
-            <div class="board">
+            <div class="todo-page-board">
                 {column("pending")}
                 {column("ongoing")}
                 {column("reviewing")}
             </div>
             <dialog
-                class="add-dialog"
+                class="todo-page-add-dialog"
                 ref={addDialog}
                 onClick={event => {
                     if (event.target === addDialog) addDialog?.close();
                 }}
             >
-                <form class="add-form" ref={addForm} onSubmit={submitAdd}>
+                <form class="todo-page-add-form" ref={addForm} onSubmit={submitAdd}>
                     <h2>New TODO</h2>
-                    <input class="g-text-input title" type="text" autocomplete="off" placeholder="Title" required ref={addTitle} />
-                    <textarea class="g-text-input detail" rows={4} placeholder="Detail" ref={addDetail} />
-                    <label class="deadline">
+                    <input class="g-text-input todo-page-title" type="text" autocomplete="off" placeholder="Title" required ref={addTitle} />
+                    <textarea class="g-text-input todo-page-detail" rows={4} placeholder="Detail" ref={addDetail} />
+                    <label class="todo-page-deadline">
                         Deadline (optional) <input class="g-text-input" type="date" ref={addDeadline} />
                     </label>
-                    <span class="actions">
+                    <span class="todo-page-actions">
                         <button class="g-button g-danger cancel" type="button" onClick={() => addDialog?.close()}>
                             Cancel
                         </button>
@@ -125,6 +123,11 @@ export function TodoPage() {
             </dialog>
         </div>
     );
+}
+
+interface Gap {
+    section: Section;
+    gap: number;
 }
 
 function SectionColumn(props: {
@@ -154,7 +157,7 @@ function SectionColumn(props: {
                 event.preventDefault();
                 props.onGap({section: props.section, gap: props.items.length});
                 props.clearDropMarks();
-                view?.classList.add("drop-end");
+                view?.classList.add("todo-page-drop-end");
             }}
             onDrop={event => {
                 event.preventDefault();
@@ -162,7 +165,7 @@ function SectionColumn(props: {
             }}
         >
             <h2>{TITLES[props.section]}</h2>
-            <ul class="list" hidden={!props.loaded || props.items.length === 0}>
+            <ul class="todo-page-list" hidden={!props.loaded || props.items.length === 0}>
                 {props.items.map((item, index) =>
                     props.editing?.section === props.section && props.editing.index === index ? (
                         <EditCard item={item} onSave={fields => props.onSave(index, fields)} onCancel={props.onCancel} />
@@ -180,7 +183,7 @@ function SectionColumn(props: {
                     )
                 )}
             </ul>
-            <div class="drop-zone">Drop a card here</div>
+            <div class="todo-page-drop-zone">Drop a card here</div>
         </section>
     );
 }
@@ -205,7 +208,7 @@ function CardRow(props: {
                 event.dataTransfer?.setData("text/plain", props.item.title);
                 if (event.dataTransfer) event.dataTransfer.effectAllowed = "move";
                 props.onDragStart();
-                row?.classList.add("dragging");
+                row?.classList.add("todo-page-dragging");
             }}
             onDragOver={event => {
                 if (!props.dragReady() || !row) return;
@@ -214,16 +217,16 @@ function CardRow(props: {
                 const after = event.clientY > box.top + box.height / 2;
                 props.onGap(after);
                 props.clearDropMarks();
-                row.classList.add(after ? "after" : "before");
+                row.classList.add(after ? "todo-page-after" : "todo-page-before");
             }}
             onDragEnd={() => {
                 if (row) row.draggable = false;
-                row?.classList.remove("dragging");
+                row?.classList.remove("todo-page-dragging");
                 props.onDragEnd();
             }}
         >
             <div
-                class="handle"
+                class="todo-page-handle"
                 title="Drag to reorder or move"
                 onMouseDown={() => {
                     if (row) row.draggable = true;
@@ -234,15 +237,15 @@ function CardRow(props: {
             >
                 ⋮⋮⋮
             </div>
-            <div class="body">
-                <span class="title">{props.item.title}</span>
-                <p class="detail" hidden={!props.item.detail}>
+            <div class="todo-page-body">
+                <span class="todo-page-title">{props.item.title}</span>
+                <p class="todo-page-detail" hidden={!props.item.detail}>
                     {props.item.detail}
                 </p>
-                <p class="deadline" hidden={!props.item.deadline}>
+                <p class="todo-page-deadline" hidden={!props.item.deadline}>
                     Deadline: {props.item.deadline}
                 </p>
-                <span class="actions">
+                <span class="todo-page-actions">
                     <button class="g-button g-small" type="button" onClick={props.onEdit}>
                         Edit
                     </button>
@@ -272,7 +275,7 @@ function EditCard(props: {item: Card; onSave: (fields: Card) => void; onCancel: 
     return (
         <li class="todo-page-edit-card" onKeyDown={onKeyDown}>
             <input
-                class="g-text-input title"
+                class="g-text-input todo-page-title"
                 type="text"
                 autocomplete="off"
                 placeholder="Title"
@@ -283,7 +286,7 @@ function EditCard(props: {item: Card; onSave: (fields: Card) => void; onCancel: 
                 }}
             />
             <textarea
-                class="g-text-input detail"
+                class="g-text-input todo-page-detail"
                 rows={3}
                 placeholder="Detail"
                 ref={element => {
@@ -291,7 +294,7 @@ function EditCard(props: {item: Card; onSave: (fields: Card) => void; onCancel: 
                     element.value = props.item.detail;
                 }}
             />
-            <label class="deadline">
+            <label class="todo-page-deadline">
                 Deadline (optional){" "}
                 <input
                     class="g-text-input"
@@ -302,7 +305,7 @@ function EditCard(props: {item: Card; onSave: (fields: Card) => void; onCancel: 
                     }}
                 />
             </label>
-            <span class="actions">
+            <span class="todo-page-actions">
                 <button class="g-button g-small" type="button" onClick={() => props.onSave(fields())}>
                     Save
                 </button>

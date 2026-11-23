@@ -1,10 +1,10 @@
-.todo-page {
-    > .error {
+#todo-page {
+    > .todo-page-error {
         color: var(--bad);
         white-space: pre-wrap;
     }
 
-    > .header {
+    > .todo-page-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -15,7 +15,7 @@
         }
     }
 
-    .add-dialog {
+    .todo-page-add-dialog {
         width: min(480px, calc(100vw - 32px));
         padding: 0;
         border: 1px solid var(--line);
@@ -28,7 +28,7 @@
             background: var(--overlay);
         }
 
-        > .add-form {
+        > .todo-page-add-form {
             display: flex;
             flex-direction: column;
             gap: 12px;
@@ -38,11 +38,11 @@
                 margin: 0;
             }
 
-            > .detail {
+            > .todo-page-detail {
                 resize: vertical;
             }
 
-            > .deadline {
+            > .todo-page-deadline {
                 display: flex;
                 flex-direction: column;
                 gap: 4px;
@@ -50,7 +50,7 @@
                 font-size: 12px;
             }
 
-            > .actions {
+            > .todo-page-actions {
                 display: flex;
                 justify-content: flex-end;
                 gap: 8px;
@@ -58,7 +58,7 @@
         }
     }
 
-    .board {
+    .todo-page-board {
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 16px;
@@ -71,17 +71,17 @@
         display: flex;
         flex-direction: column;
 
-        &.drop-end > .drop-zone {
+        &.todo-page-drop-end > .todo-page-drop-zone {
             border-color: var(--accent);
             background: var(--gradient-active);
             color: var(--accent);
         }
 
-        > .list:empty + .drop-zone {
+        > .todo-page-list:empty + .todo-page-drop-zone {
             margin-top: 0;
         }
 
-        > .drop-zone {
+        > .todo-page-drop-zone {
             flex: 1;
             min-height: 64px;
             margin-top: 14px;
@@ -98,7 +98,7 @@
                 color 0.3s;
         }
 
-        > .list {
+        > .todo-page-list {
             display: flex;
             flex-direction: column;
             gap: 14px;
@@ -118,21 +118,21 @@
         overflow: hidden;
         font-size: 14px;
 
-        .actions {
+        .todo-page-actions {
             display: flex;
             gap: 6px;
             justify-content: flex-end;
             white-space: nowrap;
         }
 
-        .detail {
+        .todo-page-detail {
             margin: 0;
             color: var(--muted);
             white-space: pre-wrap;
             overflow-wrap: anywhere;
         }
 
-        .deadline {
+        .todo-page-deadline {
             margin: 0;
             font-size: 12px;
             color: var(--muted);
@@ -144,26 +144,26 @@
         padding: 16px 18px 18px;
     }
 
-    .todo-page-edit-card label.deadline {
+    .todo-page-edit-card label.todo-page-deadline {
         display: flex;
         flex-direction: column;
         gap: 4px;
     }
 
     .todo-page-card {
-        &.dragging {
+        &.todo-page-dragging {
             opacity: 0.4;
         }
 
-        &.before {
+        &.todo-page-before {
             box-shadow: inset 0 2px 0 var(--accent);
         }
 
-        &.after {
+        &.todo-page-after {
             box-shadow: inset 0 -2px 0 var(--accent);
         }
 
-        > .handle {
+        > .todo-page-handle {
             padding: 2px 0;
             line-height: 1;
             text-align: center;
@@ -178,13 +178,13 @@
             }
         }
 
-        > .body {
+        > .todo-page-body {
             display: flex;
             flex-direction: column;
             gap: 10px;
             padding: 16px 18px 18px;
 
-            > .title {
+            > .todo-page-title {
                 font-weight: 600;
                 overflow-wrap: anywhere;
             }

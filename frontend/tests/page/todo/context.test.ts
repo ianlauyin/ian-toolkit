@@ -23,10 +23,10 @@ vi.mock("util/ajax/api/public/page/save", () => ({
     },
 }));
 
-import {createTodoPage} from "../../../src/page/todo/context";
+import {TodoPageContext} from "../../../src/page/todo/context";
 
 const card = (title: string, detail = "", deadline = "") => ({title, detail, deadline});
-const titles = (todo: ReturnType<typeof createTodoPage>, section: "pending" | "ongoing" | "reviewing") => todo.store.lists[section].map(item => item.title);
+const titles = (todo: TodoPageContext, section: "pending" | "ongoing" | "reviewing") => todo.store.lists[section].map(item => item.title);
 
 beforeEach(() => {
     fake.saved = null;
@@ -35,10 +35,10 @@ beforeEach(() => {
     fake.saves = [];
 });
 
-describe("createTodoPage", () => {
+describe("TodoPageContext", () => {
     it("shows the error when the load fails", async () => {
         fake.failLoad = true;
-        const todo = createTodoPage();
+        const todo = new TodoPageContext();
         await todo.load();
         assert.equal(todo.store.loaded, false);
         assert.equal(todo.store.error, "Failed to load my TODOs: db down");
@@ -46,7 +46,7 @@ describe("createTodoPage", () => {
 
     it("saves the full lists as todo-items on add", async () => {
         fake.saved = {pending: [card("a")]};
-        const todo = createTodoPage();
+        const todo = new TodoPageContext();
         await todo.load();
         await todo.add("ongoing", {title: "  b  ", detail: " d ", deadline: "2026-12-01"});
         assert.deepEqual(fake.saves, [{name: "todo-items", data: {pending: [card("a")], ongoing: [card("b", "d", "2026-12-01")], reviewing: []}}]);
@@ -54,7 +54,7 @@ describe("createTodoPage", () => {
 
     it("does not add or change a TODO with an empty title", async () => {
         fake.saved = {pending: [card("a")]};
-        const todo = createTodoPage();
+        const todo = new TodoPageContext();
         await todo.load();
         await todo.add("pending", {title: "   ", detail: "x", deadline: ""});
         await todo.edit("pending", 0, {title: "", detail: "x", deadline: ""});
@@ -64,7 +64,7 @@ describe("createTodoPage", () => {
 
     it("edits the title, the detail and the deadline, and clears the deadline", async () => {
         fake.saved = {pending: [card("a", "", "2026-12-01"), card("b")]};
-        const todo = createTodoPage();
+        const todo = new TodoPageContext();
         await todo.load();
         await todo.edit("pending", 0, {title: " c ", detail: " d ", deadline: ""});
         assert.deepEqual(todo.store.lists.pending, [card("c", "d", ""), card("b")]);
@@ -72,7 +72,7 @@ describe("createTodoPage", () => {
 
     it("removes a TODO", async () => {
         fake.saved = {pending: [card("a"), card("b")]};
-        const todo = createTodoPage();
+        const todo = new TodoPageContext();
         await todo.load();
         await todo.remove("pending", 0);
         assert.deepEqual(titles(todo, "pending"), ["b"]);
@@ -80,7 +80,7 @@ describe("createTodoPage", () => {
 
     it("moves a TODO to a gap in the same column", async () => {
         fake.saved = {pending: [card("a"), card("b"), card("c")]};
-        const todo = createTodoPage();
+        const todo = new TodoPageContext();
         await todo.load();
         await todo.move("pending", 0, "pending", 3);
         assert.deepEqual(titles(todo, "pending"), ["b", "c", "a"]);
@@ -93,7 +93,7 @@ describe("createTodoPage", () => {
 
     it("moves a TODO to a gap in another column and keeps its detail and deadline", async () => {
         fake.saved = {pending: [card("a"), card("b", "d", "2026-12-01")], ongoing: [card("c")]};
-        const todo = createTodoPage();
+        const todo = new TodoPageContext();
         await todo.load();
         await todo.move("pending", 1, "ongoing", 0);
         assert.deepEqual(todo.store.lists.ongoing, [card("b", "d", "2026-12-01"), card("c")]);
@@ -104,7 +104,7 @@ describe("createTodoPage", () => {
 
     it("keeps the last saved lists when a save fails", async () => {
         fake.saved = {pending: [card("a")]};
-        const todo = createTodoPage();
+        const todo = new TodoPageContext();
         await todo.load();
         fake.failSave = true;
         await todo.add("pending", {title: "b", detail: "", deadline: ""});

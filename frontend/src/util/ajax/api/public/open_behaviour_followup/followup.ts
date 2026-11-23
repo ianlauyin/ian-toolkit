@@ -7,4 +7,6 @@ export interface OpenBehaviourFollowupFollowupRequest {
     text: string;
 }
 
-export const openBehaviourFollowupFollowupAjax = (request: OpenBehaviourFollowupFollowupRequest): Promise<ProgressResponse> => ajax("/open-behaviour-followup", "POST", request);
+export function openBehaviourFollowupFollowupAjax(request: OpenBehaviourFollowupFollowupRequest): Promise<ProgressResponse> {
+    return ajax("/open-behaviour-followup", "POST", request);
+}

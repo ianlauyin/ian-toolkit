@@ -5,9 +5,10 @@ import {pageLoadAjax} from "util/ajax/api/public/page/load";
 import {pageSaveAjax} from "util/ajax/api/public/page/save";
 import {projectsListAjax} from "util/ajax/api/public/projects/list";
 import {assignKey} from "util/note";
-import {createStore, flush} from "solid-js";
+import {flush} from "solid-js";
+import {PageContext} from "ian-framework-fe";
 
-import type {Note, NotesPageContext, NotesPageStore, Progress} from "./types";
+import type {Note, NotesPageStore, Progress} from "./types";
 
 const NOTES_PAGE = "notes";
 const ASSIGNS_PAGE = "notes-assigns";
@@ -20,126 +21,134 @@ const reason = (error: unknown): string => (error instanceof Error ? error.messa
 
 const savedAssigns = (assigns: Assigns): Assigns => Object.fromEntries(Object.entries(assigns).filter(([, value]) => value && value !== "starting"));
 
-export const createNotesPage = (): NotesPageContext => {
-    const [store, setStore] = createStore<NotesPageStore>({
-        projects: [],
-        notes: {},
-        assigns: {},
-        progress: {},
-        loaded: false,
-        error: "",
-        tab: "",
-        addText: "",
-    });
-    let refreshing = false;
+const initialState: NotesPageStore = {
+    projects: [],
+    notes: {},
+    assigns: {},
+    progress: {},
+    loaded: false,
+    error: "",
+    tab: "",
+    addText: "",
+};
 
-    const load = async () => {
+export class NotesPageContext extends PageContext<NotesPageStore> {
+    readonly store = this.state;
+    private readonly setStore = this.setState;
+
+    constructor() {
+        super(structuredClone(initialState));
+    }
+
+    private refreshing = false;
+
+    async load() {
         try {
             const [projects, notes, assigns] = await Promise.all([projectsListAjax(), pageLoadAjax({name: NOTES_PAGE}), pageLoadAjax({name: ASSIGNS_PAGE})]);
-            setStore(state => {
+            this.setStore(state => {
                 state.projects = projects;
             });
-            setStore(state => {
+            this.setStore(state => {
                 state.notes = (notes ?? {}) as NotesMap;
             });
-            setStore(state => {
+            this.setStore(state => {
                 state.assigns = (assigns ?? {}) as Assigns;
             });
-            setStore(state => {
+            this.setStore(state => {
                 state.loaded = true;
             });
-            setStore(state => {
+            this.setStore(state => {
                 state.error = "";
             });
         } catch (error) {
-            setStore(state => {
+            this.setStore(state => {
                 state.error = `Failed to load the notes: ${reason(error)}`;
             });
         }
         flush();
-    };
+    }
 
-    const addNote = async (tab: string, text: string) => {
+    async addNote(tab: string, text: string) {
         const trimmed = text.trim();
         if (!trimmed) return false;
-        const next = {...store.notes, [tab]: [...(store.notes[tab] ?? []), {id: crypto.randomUUID(), text: trimmed}]};
+        const next = {...this.store.notes, [tab]: [...(this.store.notes[tab] ?? []), {id: crypto.randomUUID(), text: trimmed}]};
         try {
             await pageSaveAjax({name: NOTES_PAGE, data: next});
-            setStore(state => {
+            this.setStore(state => {
                 state.notes = next;
             });
-            setStore(state => {
+            this.setStore(state => {
                 state.error = "";
             });
             flush();
             return true;
         } catch (error) {
-            setStore(state => {
+            this.setStore(state => {
                 state.error = `Failed to save: ${reason(error)}`;
             });
             flush();
             return false;
         }
-    };
+    }
 
-    const editNote = async (tab: string, note: Note, text: string) => {
+    async editNote(tab: string, note: Note, text: string) {
         const trimmed = text.trim();
         if (!trimmed) return false;
-        const items = (store.notes[tab] ?? []).map(item => (item.id === note.id ? {...item, text: trimmed} : item));
-        const next = {...store.notes, [tab]: items};
+        const items = (this.store.notes[tab] ?? []).map(item => (item.id === note.id ? {...item, text: trimmed} : item));
+        const next = {...this.store.notes, [tab]: items};
         try {
             await pageSaveAjax({name: NOTES_PAGE, data: next});
-            setStore(state => {
+            this.setStore(state => {
                 state.notes = next;
             });
-            setStore(state => {
+            this.setStore(state => {
                 state.error = "";
             });
             flush();
             return true;
         } catch (error) {
-            setStore(state => {
+            this.setStore(state => {
                 state.error = `Failed to save: ${reason(error)}`;
             });
             flush();
             return false;
         }
-    };
+    }
 
-    const removeNote = async (tab: string, note: Note) => {
+    async removeNote(tab: string, note: Note) {
         const key = assignKey(tab, note);
-        const next = {...store.notes, [tab]: (store.notes[tab] ?? []).filter(item => item.id !== note.id)};
-        const {[key]: _removed, ...assigns} = store.assigns;
+        const next = {...this.store.notes, [tab]: (this.store.notes[tab] ?? []).filter(item => item.id !== note.id)};
+        const {[key]: _removed, ...assigns} = this.store.assigns;
         try {
             await pageSaveAjax({name: NOTES_PAGE, data: next});
-            setStore(state => {
+            this.setStore(state => {
                 state.notes = next;
             });
-            if (key in store.assigns) {
+            if (key in this.store.assigns) {
                 await pageSaveAjax({name: ASSIGNS_PAGE, data: savedAssigns(assigns)});
-                setStore(state => {
+                this.setStore(state => {
                     state.assigns = assigns;
                 });
             }
-            setStore(state => {
+            this.setStore(state => {
                 state.error = "";
             });
         } catch (error) {
-            setStore(state => {
+            this.setStore(state => {
                 state.error = `Failed to save: ${reason(error)}`;
             });
         }
         flush();
-    };
+    }
 
-    const assign = async (tab: string, note: Note) => {
+    async assign(tab: string, note: Note) {
         const key = assignKey(tab, note);
-        if (store.assigns[key]) return;
-        const {[key]: _ended, ...progress} = store.progress;
-        setStore(state => {
-            state.assigns = {...store.assigns, [key]: "starting"};
+        if (this.store.assigns[key]) return;
+        const {[key]: _ended, ...progress} = this.store.progress;
+        this.setStore(state => {
+            state.assigns = {...this.store.assigns, [key]: "starting"};
         });
-        setStore(state => {
+        this.setStore(state => {
             state.progress = progress;
         });
         flush();
@@ -147,64 +156,64 @@ export const createNotesPage = (): NotesPageContext => {
         try {
             ({chat} = await notesAssignAssignAjax({tab, text: note.text}));
         } catch (error) {
-            const {[key]: _starting, ...rest} = store.assigns;
-            setStore(state => {
+            const {[key]: _starting, ...rest} = this.store.assigns;
+            this.setStore(state => {
                 state.assigns = rest;
             });
-            setStore(state => {
+            this.setStore(state => {
                 state.error = `Failed to assign the task: ${reason(error)}`;
             });
             flush();
             return;
         }
-        const next = {...store.assigns, [key]: chat};
+        const next = {...this.store.assigns, [key]: chat};
         try {
             await pageSaveAjax({name: ASSIGNS_PAGE, data: savedAssigns(next)});
-            setStore(state => {
+            this.setStore(state => {
                 state.assigns = next;
             });
-            setStore(state => {
+            this.setStore(state => {
                 state.error = "";
             });
         } catch (error) {
-            const {[key]: _chat, ...rest} = store.assigns;
-            setStore(state => {
+            const {[key]: _chat, ...rest} = this.store.assigns;
+            this.setStore(state => {
                 state.assigns = rest;
             });
-            setStore(state => {
+            this.setStore(state => {
                 state.error = `Failed to save: ${reason(error)}`;
             });
         }
         flush();
-    };
+    }
 
-    const followup = async (key: string, text: string) => {
-        const chat = store.assigns[key];
+    async followup(key: string, text: string) {
+        const chat = this.store.assigns[key];
         const trimmed = text.trim();
         if (!chat || chat === "starting" || !trimmed) return false;
         try {
             const progress = await openBehaviourFollowupFollowupAjax({chat, text: trimmed});
-            setStore(state => {
-                state.progress = {...store.progress, [key]: progress};
+            this.setStore(state => {
+                state.progress = {...this.store.progress, [key]: progress};
             });
-            setStore(state => {
+            this.setStore(state => {
                 state.error = "";
             });
             flush();
             return true;
         } catch (error) {
-            setStore(state => {
+            this.setStore(state => {
                 state.error = `Failed to send the follow-up: ${reason(error)}`;
             });
             flush();
             return false;
         }
-    };
+    }
 
-    const refreshProgress = async () => {
-        const running = Object.entries(store.assigns).filter(([key, chat]) => chat !== "starting" && !ENDED.includes(store.progress[key]?.status));
-        if (refreshing || running.length === 0) return;
-        refreshing = true;
+    async refreshProgress() {
+        const running = Object.entries(this.store.assigns).filter(([key, chat]) => chat !== "starting" && !ENDED.includes(this.store.progress[key]?.status));
+        if (this.refreshing || running.length === 0) return;
+        this.refreshing = true;
         const loaded = await Promise.all(
             running.map(async ([key, chat]) => {
                 try {
@@ -214,40 +223,38 @@ export const createNotesPage = (): NotesPageContext => {
                 }
             })
         );
-        setStore(state => {
-            state.progress = {...store.progress, ...Object.fromEntries(loaded)};
+        this.setStore(state => {
+            state.progress = {...this.store.progress, ...Object.fromEntries(loaded)};
         });
         const failed = loaded.filter(([, progress]) => progress.status === "failed").map(([key]) => key);
         if (failed.length > 0) {
             const remove = (assigns: Assigns) => Object.fromEntries(Object.entries(assigns).filter(([key]) => !failed.includes(key)));
             try {
-                await pageSaveAjax({name: ASSIGNS_PAGE, data: savedAssigns(remove(store.assigns))});
-                setStore(state => {
-                    state.assigns = remove(store.assigns);
+                await pageSaveAjax({name: ASSIGNS_PAGE, data: savedAssigns(remove(this.store.assigns))});
+                this.setStore(state => {
+                    state.assigns = remove(this.store.assigns);
                 });
             } catch (error) {
-                setStore(state => {
+                this.setStore(state => {
                     state.error = `Failed to save: ${reason(error)}`;
                 });
             }
         }
-        refreshing = false;
+        this.refreshing = false;
         flush();
-    };
+    }
 
-    const setTab = (tab: string) => {
-        setStore(state => {
+    setTab(tab: string) {
+        this.setStore(state => {
             state.tab = tab;
         });
         flush();
-    };
+    }
 
-    const setAddText = (text: string) => {
-        setStore(state => {
+    setAddText(text: string) {
+        this.setStore(state => {
             state.addText = text;
         });
         flush();
-    };
-
-    return {store, load, addNote, editNote, removeNote, assign, followup, refreshProgress, setTab, setAddText};
-};
+    }
+}

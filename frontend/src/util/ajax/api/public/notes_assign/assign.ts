@@ -9,4 +9,6 @@ export interface NotesAssignAssignResponse {
     chat: string;
 }
 
-export const notesAssignAssignAjax = (request: NotesAssignAssignRequest): Promise<NotesAssignAssignResponse> => ajax("/notes-assign", "POST", request);
+export function notesAssignAssignAjax(request: NotesAssignAssignRequest): Promise<NotesAssignAssignResponse> {
+    return ajax("/notes-assign", "POST", request);
+}

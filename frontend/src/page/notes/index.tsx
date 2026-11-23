@@ -1,8 +1,8 @@
 import {assignKey} from "util/note";
 import {For, createEffect, createSignal, onCleanup, onSettled} from "solid-js";
 
-import {createNotesPage} from "./context";
-import type {Note, NotesPageContext} from "./types";
+import {NotesPageContext} from "./context";
+import type {Note} from "./types";
 import "./index.css";
 
 const EMPTY: Note[] = [];
@@ -16,7 +16,7 @@ const PROGRESS_STATUS: Record<string, string> = {
 };
 
 export function NotesPage() {
-    const page = createNotesPage();
+    const page = new NotesPageContext();
 
     const selected = () => page.store.tab || page.store.projects[0]?.id || "";
 
@@ -43,21 +43,21 @@ export function NotesPage() {
                     return (
                         <button
                             type="button"
-                            class={{on: project.id === selected()}}
+                            class={{"notes-page-on": project.id === selected()}}
                             onClick={() => {
                                 page.setTab(project.id);
                                 page.setAddText("");
                             }}
                         >
                             {project.name}
-                            <span class="badge" hidden={count === 0}>
+                            <span class="notes-page-badge" hidden={count === 0}>
                                 {count}
                             </span>
                         </button>
                     );
                 })}
             </div>
-            <p class="error" hidden={!page.store.error}>
+            <p class="notes-page-error" hidden={!page.store.error}>
                 {page.store.error}
             </p>
             <form class="notes-page-add" hidden={!page.store.loaded || !selected()} onSubmit={event => void submitAdd(event)}>
@@ -82,7 +82,7 @@ export function NotesPage() {
             </form>
             <div class="notes-page-list">
                 <For each={page.store.notes[selected()] ?? EMPTY}>{note => <NoteCard tab={selected()} note={note} page={page} />}</For>
-                {page.store.loaded && selected() && (page.store.notes[selected()] ?? EMPTY).length === 0 ? <p class="empty">No note.</p> : null}
+                {page.store.loaded && selected() && (page.store.notes[selected()] ?? EMPTY).length === 0 ? <p class="notes-page-empty">No note.</p> : null}
             </div>
         </div>
     );
@@ -130,10 +130,10 @@ function NoteCard(props: {tab: string; note: Note; page: NotesPageContext}) {
 
     return (
         <article class="notes-page-card">
-            <p class="text" hidden={editing()}>
+            <p class="notes-page-text" hidden={editing()}>
                 {props.note.text}
             </p>
-            <form class="edit-form" hidden={!editing()} onSubmit={event => void saveEdit(event)}>
+            <form class="notes-page-edit-form" hidden={!editing()} onSubmit={event => void saveEdit(event)}>
                 <textarea
                     class="g-text-input"
                     rows={3}
@@ -143,7 +143,7 @@ function NoteCard(props: {tab: string; note: Note; page: NotesPageContext}) {
                         if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) event.currentTarget.form?.requestSubmit();
                     }}
                 />
-                <div class="actions">
+                <div class="notes-page-actions">
                     <button class="g-button" type="submit">
                         Save
                     </button>
@@ -152,7 +152,7 @@ function NoteCard(props: {tab: string; note: Note; page: NotesPageContext}) {
                     </button>
                 </div>
             </form>
-            <div class="actions view-actions" hidden={editing()}>
+            <div class="notes-page-actions view-actions" hidden={editing()}>
                 <button class="g-button assign" type="button" disabled={assign() !== ""} onClick={() => void props.page.assign(props.tab, props.note)}>
                     {assign() === "" ? "Assign task" : assign() === "starting" ? "Starting…" : "Assigned"}
                 </button>
@@ -170,17 +170,17 @@ function NoteCard(props: {tab: string; note: Note; page: NotesPageContext}) {
                     Delete
                 </button>
             </div>
-            <p class="assign-chat" hidden={!started()}>
+            <p class="notes-page-assign-chat" hidden={!started()}>
                 The local agent {assign()} works in the project folder.
             </p>
-            <div class="assign-progress" hidden={!progress()}>
-                <p class={`state ${progress()?.status ?? ""}`}>{PROGRESS_STATUS[progress()?.status ?? ""] ?? `Failed to load the progress: ${progress()?.error ?? ""}`}</p>
-                <ol class="steps" ref={steps}>
+            <div class="notes-page-assign-progress" hidden={!progress()}>
+                <p class={`notes-page-state notes-page-${progress()?.status ?? ""}`}>{PROGRESS_STATUS[progress()?.status ?? ""] ?? `Failed to load the progress: ${progress()?.error ?? ""}`}</p>
+                <ol class="notes-page-steps" ref={steps}>
                     {(progress()?.steps ?? []).map(step => (
-                        <li class={step.kind}>{step.text}</li>
+                        <li class={`notes-page-${step.kind}`}>{step.text}</li>
                     ))}
                 </ol>
-                <form class="followup-form" hidden={!showFollowup()} onSubmit={event => void sendFollowup(event)}>
+                <form class="notes-page-followup-form" hidden={!showFollowup()} onSubmit={event => void sendFollowup(event)}>
                     <label>
                         Follow-up
                         <textarea
