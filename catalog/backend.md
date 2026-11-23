@@ -11,9 +11,6 @@
 | `backend/src/router/api/mod.rs` | API checks | A request to `/api` that is not from the same origin returns 403. |
 | `backend/src/router/api/public/page/` | Saved page data | |
 | `backend/src/router/api/public/projects/list.rs` | Project list | The list follows the order of the keys in `conf/projects.json`. |
-| `backend/src/router/api/public/notes_assign/assign.rs` | Note assign | A project path in `conf/projects.json` is absolute or relative to the repo root. |
 | `backend/src/env.rs` | Env values and data paths | |
 | `backend/src/router/shown_result.rs` | Handler response | An `INTERNAL_ERROR` returns 500 with its message. Each other code keeps the response of `Exception`. |
-| `backend/src/open_behaviour.rs` | Local agent run | The agent can edit files and run commands with no approval. The agent calls no subagent. The agent continues when the page closes or the server restarts. |
-| `backend/src/router/api/public/open_behaviour_progress/progress.rs` | Agent progress | |
-| `backend/src/router/api/public/open_behaviour_followup/followup.rs` | Agent follow-up | |
+

@@ -1,32 +1,18 @@
-import {assignKey} from "util/note";
-import {For, createEffect, createSignal, onCleanup, onSettled} from "solid-js";
+import {For, createSignal, onSettled} from "solid-js";
 
 import {NotesPageContext} from "./context";
 import type {Note} from "./types";
 import "./index.css";
 
 const EMPTY: Note[] = [];
-const PROGRESS_MS = 3000;
-const REPLY_STATUS = ["finished", "stopped"];
-const PROGRESS_STATUS: Record<string, string> = {
-    running: "The agent is working.",
-    finished: "The agent finished.",
-    failed: "The agent failed.",
-    stopped: "The agent stopped before it finished.",
-};
 
 export function NotesPage() {
     const page = new NotesPageContext();
 
     const selected = () => page.store.tab || page.store.projects[0]?.id || "";
 
-    let timer: ReturnType<typeof setInterval> | undefined;
     onSettled(() => {
-        void page.load().then(() => page.refreshProgress());
-        timer = setInterval(() => void page.refreshProgress(), PROGRESS_MS);
-    });
-    onCleanup(() => {
-        if (timer) clearInterval(timer);
+        void page.load();
     });
 
     async function submitAdd(event: SubmitEvent) {
@@ -91,41 +77,10 @@ export function NotesPage() {
 function NoteCard(props: {tab: string; note: Note; page: NotesPageContext}) {
     const [editing, setEditing] = createSignal(false);
     const [editText, setEditText] = createSignal("");
-    const [followup, setFollowup] = createSignal("");
-    const [sending, setSending] = createSignal(false);
-    let steps: HTMLOListElement | undefined;
-    let shownProgress = "";
-
-    const key = () => assignKey(props.tab, props.note);
-    const assign = () => props.page.store.assigns[key()] ?? "";
-    const progress = () => props.page.store.progress[key()];
-    const started = () => assign() !== "" && assign() !== "starting";
-    const showFollowup = () => started() && REPLY_STATUS.includes(progress()?.status ?? "");
-
-    createEffect(
-        () => {
-            const current = progress();
-            return current ? `${current.status}/${current.steps.length}` : "";
-        },
-        shown => {
-            if (!shown || shown === shownProgress || !steps) return;
-            shownProgress = shown;
-            steps.scrollTop = steps.scrollHeight;
-        }
-    );
 
     async function saveEdit(event: SubmitEvent) {
         event.preventDefault();
         if (await props.page.editNote(props.tab, props.note, editText())) setEditing(false);
-    }
-
-    async function sendFollowup(event: SubmitEvent) {
-        event.preventDefault();
-        if (sending() || !followup().trim()) return;
-        setSending(true);
-        const sent = await props.page.followup(key(), followup());
-        setSending(false);
-        if (sent) setFollowup("");
     }
 
     return (
@@ -153,9 +108,6 @@ function NoteCard(props: {tab: string; note: Note; page: NotesPageContext}) {
                 </div>
             </form>
             <div class="notes-page-actions view-actions" hidden={editing()}>
-                <button class="g-button assign" type="button" disabled={assign() !== ""} onClick={() => void props.page.assign(props.tab, props.note)}>
-                    {assign() === "" ? "Assign task" : assign() === "starting" ? "Starting…" : "Assigned"}
-                </button>
                 <button
                     class="g-button edit"
                     type="button"
@@ -169,35 +121,6 @@ function NoteCard(props: {tab: string; note: Note; page: NotesPageContext}) {
                 <button class="g-button remove" type="button" onClick={() => void props.page.removeNote(props.tab, props.note)}>
                     Delete
                 </button>
-            </div>
-            <p class="notes-page-assign-chat" hidden={!started()}>
-                The local agent {assign()} works in the project folder.
-            </p>
-            <div class="notes-page-assign-progress" hidden={!progress()}>
-                <p class={`notes-page-state notes-page-${progress()?.status ?? ""}`}>{PROGRESS_STATUS[progress()?.status ?? ""] ?? `Failed to load the progress: ${progress()?.error ?? ""}`}</p>
-                <ol class="notes-page-steps" ref={steps}>
-                    {(progress()?.steps ?? []).map(step => (
-                        <li class={`notes-page-${step.kind}`}>{step.text}</li>
-                    ))}
-                </ol>
-                <form class="notes-page-followup-form" hidden={!showFollowup()} onSubmit={event => void sendFollowup(event)}>
-                    <label>
-                        Follow-up
-                        <textarea
-                            class="g-text-input"
-                            rows={2}
-                            placeholder="Reply to the agent"
-                            value={followup()}
-                            onInput={event => setFollowup(event.currentTarget.value)}
-                            onKeyDown={event => {
-                                if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) event.currentTarget.form?.requestSubmit();
-                            }}
-                        />
-                    </label>
-                    <button class="g-button" type="submit" disabled={sending() || !followup().trim()}>
-                        {sending() ? "Sending…" : "Send"}
-                    </button>
-                </form>
             </div>
         </article>
     );

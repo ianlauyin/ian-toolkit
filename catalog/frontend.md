@@ -14,4 +14,4 @@
 | `frontend/src/style/tokens.css` | Design tokens | The page uses a warm ivory background, a clay accent, and serif headings. |
 | `frontend/src/style/theme-dark.css` | Dark tokens | |
 | `frontend/src/page/todo/` | TODO board | A save that has the list important or the list items, or a card field text, loads into Pending. |
-| `frontend/src/page/notes/` | Notes page | When the agent fails after the fallback, the page clears the assigned task. |
+| `frontend/src/page/notes/` | Notes page | |

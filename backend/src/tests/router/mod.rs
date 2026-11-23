@@ -94,47 +94,6 @@ async fn bad_requests_return_json_errors() {
     assert_eq!(status, StatusCode::BAD_REQUEST);
     assert!(error_of(&body).is_string());
 
-    let (status, body) = send(&app, get("/api/open-behaviour-progress?chat=..%2Fapp")).await;
-    assert_eq!(
-        (status, error_of(&body)),
-        (StatusCode::BAD_REQUEST, json!("Bad chat id."))
-    );
-
-    let followup = Request::post("/api/open-behaviour-followup")
-        .header("sec-fetch-site", "same-origin")
-        .header(CONTENT_TYPE, "application/json")
-        .body(Body::from(
-            r#"{"chat":"../app","text":"Also fix the test."}"#,
-        ))
-        .unwrap();
-    let (status, body) = send(&app, followup).await;
-    assert_eq!(
-        (status, error_of(&body)),
-        (StatusCode::BAD_REQUEST, json!("Bad chat id."))
-    );
-
-    let empty_followup = Request::post("/api/open-behaviour-followup")
-        .header("sec-fetch-site", "same-origin")
-        .header(CONTENT_TYPE, "application/json")
-        .body(Body::from(r#"{"chat":"local-1","text":"  "}"#))
-        .unwrap();
-    let (status, body) = send(&app, empty_followup).await;
-    assert_eq!(
-        (status, error_of(&body)),
-        (StatusCode::BAD_REQUEST, json!("The follow-up has no text."))
-    );
-
-    let empty_note = Request::post("/api/notes-assign")
-        .header("sec-fetch-site", "same-origin")
-        .header(CONTENT_TYPE, "application/json")
-        .body(Body::from(r#"{"tab":"my-app","text":"  "}"#))
-        .unwrap();
-    let (status, body) = send(&app, empty_note).await;
-    assert_eq!(
-        (status, error_of(&body)),
-        (StatusCode::BAD_REQUEST, json!("The note has no text."))
-    );
-
     let text = Request::put("/api/page")
         .header("sec-fetch-site", "same-origin")
         .body(Body::from(r#"{"name":"a","data":1}"#))

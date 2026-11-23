@@ -13,12 +13,6 @@ Before you read or change a file in `frontend/`, read `catalog/frontend.md`.
 | `rules/report.md` | Before you write a report |
 | `rules/writing.md` | Before you write or update a markdown file |
 
-## Skills
-
-| File | When to read |
-| --- | --- |
-| `skills/fetch-logs.md` | Before you get the log events of a project |
-
 ## Coding style
 
 Always value performance/efficiency/simplicity over strict correctness/defensive design, let me know if there is any trade off to make.

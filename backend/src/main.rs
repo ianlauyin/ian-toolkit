@@ -1,7 +1,5 @@
 mod db;
 mod env;
-mod notes;
-mod open_behaviour;
 pub(crate) mod router;
 
 #[cfg(test)]
