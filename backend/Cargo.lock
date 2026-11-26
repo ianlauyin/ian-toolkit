@@ -551,6 +551,7 @@ dependencies = [
 [[package]]
 name = "ian-framework-rs"
 version = "0.1.0"
+source = "git+https://github.com/ianlauyin/ian-framework#6bec823fabe61fc07a713f83bb0a3240f2c4d94f"
 dependencies = [
  "axum",
  "chrono",

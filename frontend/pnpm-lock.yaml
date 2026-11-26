@@ -15,8 +15,8 @@ importers:
         specifier: ^2.0.0
         version: 2.0.1(solid-js@2.0.1)
       ian-framework-fe:
-        specifier: file:../../ian-framework/framework_fe
-        version: file:../../ian-framework/framework_fe(@solidjs/router@2.0.0(@solidjs/web@2.0.1(solid-js@2.0.1))(solid-js@2.0.1))(@solidjs/web@2.0.1(solid-js@2.0.1))(solid-js@2.0.1)
+        specifier: github:ianlauyin/ian-framework#path:/framework_fe
+        version: https://codeload.github.com/ianlauyin/ian-framework/tar.gz/6bec823fabe61fc07a713f83bb0a3240f2c4d94f#path:/framework_fe(@solidjs/router@2.0.0(@solidjs/web@2.0.1(solid-js@2.0.1))(solid-js@2.0.1))(@solidjs/web@2.0.1(solid-js@2.0.1))(solid-js@2.0.1)
       solid-js:
         specifier: ^2.0.0
         version: 2.0.1
@@ -518,8 +518,9 @@ packages:
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
 
-  ian-framework-fe@file:../../ian-framework/framework_fe:
-    resolution: {directory: ../../ian-framework/framework_fe, type: directory}
+  ian-framework-fe@https://codeload.github.com/ianlauyin/ian-framework/tar.gz/6bec823fabe61fc07a713f83bb0a3240f2c4d94f#path:/framework_fe:
+    resolution: {path: /framework_fe, tarball: https://codeload.github.com/ianlauyin/ian-framework/tar.gz/6bec823fabe61fc07a713f83bb0a3240f2c4d94f}
+    version: 0.1.0
     peerDependencies:
       '@solidjs/router': ^2.0.0
       '@solidjs/web': ^2.0.0
@@ -1109,7 +1110,7 @@ snapshots:
   fsevents@2.3.3:
     optional: true
 
-  ian-framework-fe@file:../../ian-framework/framework_fe(@solidjs/router@2.0.0(@solidjs/web@2.0.1(solid-js@2.0.1))(solid-js@2.0.1))(@solidjs/web@2.0.1(solid-js@2.0.1))(solid-js@2.0.1):
+  ian-framework-fe@https://codeload.github.com/ianlauyin/ian-framework/tar.gz/6bec823fabe61fc07a713f83bb0a3240f2c4d94f#path:/framework_fe(@solidjs/router@2.0.0(@solidjs/web@2.0.1(solid-js@2.0.1))(solid-js@2.0.1))(@solidjs/web@2.0.1(solid-js@2.0.1))(solid-js@2.0.1):
     dependencies:
       '@solidjs/router': 2.0.0(@solidjs/web@2.0.1(solid-js@2.0.1))(solid-js@2.0.1)
       '@solidjs/web': 2.0.1(solid-js@2.0.1)

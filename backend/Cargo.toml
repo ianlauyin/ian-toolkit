@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-ian-framework-rs = { path = "../../ian-framework/framework_rs" }
+ian-framework-rs = { git = "https://github.com/ianlauyin/ian-framework" }
 axum = "0.8"
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 serde = { version = "1", features = ["derive"] }

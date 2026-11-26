@@ -15,7 +15,7 @@
     "dependencies": {
         "@solidjs/router": "^2.0.0",
         "@solidjs/web": "^2.0.0",
-        "ian-framework-fe": "file:../../ian-framework/framework_fe",
+        "ian-framework-fe": "github:ianlauyin/ian-framework#path:/framework_fe",
         "solid-js": "^2.0.0"
     },
     "devDependencies": {
