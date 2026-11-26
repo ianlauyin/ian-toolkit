@@ -1,1 +1,1 @@
-mod public;
+mod page;

@@ -2,7 +2,6 @@ import {render} from "@solidjs/web";
 import {KeyedRouter, type KeyedRoutes} from "ian-framework-fe";
 
 import {App} from "./App";
-import {NotesPage} from "./page/notes";
 import {TodoPage} from "./page/todo";
 import "./index.css";
 
@@ -13,10 +12,7 @@ const keyed: KeyedRoutes<"open">[] = [
             {
                 path: "/",
                 component: App,
-                children: [
-                    {path: "/todo", component: TodoPage},
-                    {path: "/notes", component: NotesPage},
-                ],
+                children: [{path: "/todo", component: TodoPage}],
             },
         ],
     },

@@ -1,5 +1,5 @@
-import {pageLoadAjax} from "util/ajax/api/public/page/load";
-import {pageSaveAjax} from "util/ajax/api/public/page/save";
+import {pageLoadAjax} from "util/ajax/api/page/load";
+import {pageSaveAjax} from "util/ajax/api/page/save";
 import {normalize, type RawTodo, type TodoLists} from "util/todo";
 import {flush} from "solid-js";
 import {PageContext} from "ian-framework-fe";
@@ -26,28 +26,13 @@ const initialState: TodoPageStore = {
 };
 
 export class TodoPageContext extends PageContext<TodoPageStore> {
-    readonly store = this.state;
+    override get store() {
+        return this.state;
+    }
     private readonly setStore = this.setState;
 
     constructor() {
         super(structuredClone(initialState));
-    }
-
-    private async save(next: TodoLists) {
-        try {
-            await pageSaveAjax({name: PAGE_NAME, data: next});
-            this.setStore(state => {
-                state.lists = next;
-            });
-            this.setStore(state => {
-                state.error = "";
-            });
-        } catch (error) {
-            this.setStore(state => {
-                state.error = `Failed to save: ${reason(error)}`;
-            });
-        }
-        flush();
     }
 
     async load() {
@@ -113,6 +98,23 @@ export class TodoPageContext extends PageContext<TodoPageStore> {
         this.setStore(state => {
             state.editing = editing;
         });
+        flush();
+    }
+
+    private async save(next: TodoLists) {
+        try {
+            await pageSaveAjax({name: PAGE_NAME, data: next});
+            this.setStore(state => {
+                state.lists = next;
+            });
+            this.setStore(state => {
+                state.error = "";
+            });
+        } catch (error) {
+            this.setStore(state => {
+                state.error = `Failed to save: ${reason(error)}`;
+            });
+        }
         flush();
     }
 }

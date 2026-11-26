@@ -1,4 +1,4 @@
-use crate::router::api::public::page::name::check_name;
+use crate::router::api::page::name::check_name;
 
 #[test]
 fn check_name_accepts_letters_digits_and_dash() {

@@ -4,12 +4,13 @@ import {createEffect} from "solid-js";
 
 import "./index.css";
 
-const PAGES = [
-    {path: "/todo", title: "TODO"},
-    {path: "/notes", title: "Notes"},
-];
+const PAGES = [{path: "/todo", title: "TODO"}];
 
-export function Shell(props: {children?: JSX.Element}) {
+export interface Props {
+    children?: JSX.Element;
+}
+
+export function Shell(props: Props) {
     const location = useLocation();
     const navigate = useNavigate();
 

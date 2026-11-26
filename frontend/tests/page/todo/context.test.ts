@@ -8,14 +8,14 @@ const fake = vi.hoisted(() => ({
     saves: [] as {name: string; data: unknown}[],
 }));
 
-vi.mock("util/ajax/api/public/page/load", () => ({
+vi.mock("util/ajax/api/page/load", () => ({
     pageLoadAjax: async () => {
         if (fake.failLoad) throw new Error("db down");
         return fake.saved;
     },
 }));
 
-vi.mock("util/ajax/api/public/page/save", () => ({
+vi.mock("util/ajax/api/page/save", () => ({
     pageSaveAjax: async (request: {name: string; data: unknown}) => {
         if (fake.failSave) throw new Error("db down");
         fake.saves.push(request);

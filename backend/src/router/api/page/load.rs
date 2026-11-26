@@ -6,7 +6,7 @@ use serde_json::Value;
 
 use ian_framework_rs::exception::Exception;
 
-use crate::router::api::public::page::name::check_name;
+use crate::router::api::page::name::check_name;
 use crate::router::state::AppState;
 
 #[derive(Deserialize)]
