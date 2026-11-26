@@ -19,7 +19,10 @@ Always value performance/efficiency/simplicity over strict correctness/defensive
 
 ### frontend
 
-- After a refactor, run `pnpm check` on `frontend/`, fix all the errors that it shows.
+- After a refactor:
+  1. cd to `frontend/`.
+  2. Run `pnpm format --write`.
+  3. Run `pnpm check`, fix all the errors that it shows.
 
 ### backend
 
